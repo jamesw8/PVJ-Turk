@@ -1,5 +1,12 @@
+# TODO
+# - fix up design
+# - switch to db by preference
+# - handle listing of bids
+# - convert inline css to external css
+
 from flask import Flask, render_template, request, send_file, redirect
 import os
+import json
 
 app = Flask(__name__)
 
@@ -23,39 +30,66 @@ def login():
 def createPost():
 	if request.method == "POST":
 		print(request.files.getlist('specfile'))
+		specfile = request.files.getlist('specfile')
 		# curr_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
-		numPost = getNumPosts() + 1
+		numPost = str(getNumPosts() + 1)
 		if not os.path.exists(curr_dir + str(numPost)):
-			os.mkdir(curr_dir + str(numPost))
-		print('dir',curr_dir+'/assets/'+str(numPost)+'/'+request.files.getlist('specfile')[0].filename)
-		request.files.getlist('specfile')[0].save(curr_dir+str(numPost)+'/'+request.files.getlist('specfile')[0].filename)
-		return redirect('/view/'+str(numPost))
+			os.mkdir(curr_dir + numPost)
+			data = {
+				'devTypes': request.form['devTypes'],
+				'projectName': request.form['projectName'],
+				'description': request.form['description'],
+				'deadline': request.form['deadline'],
+				'filename': specfile[0].filename
+			}
+			with open('assets/'+numPost+'/data.json', 'w') as datafile:
+				json.dump(data, datafile)
+
+		print('dir',curr_dir+'/assets/'+numPost+'/'+specfile[0].filename)
+		specfile[0].save(curr_dir+numPost+'/'+specfile[0].filename)
+		return redirect('/view/'+numPost)
 	return render_template('createpost.html')
 
 @app.route('/posts', methods=['GET'])
 def viewPosts():
-	return render_template('viewposts.html')
+	projects = []
+	for d in os.listdir(curr_dir):
+		if os.path.isdir(curr_dir+d):
+			with open('assets/'+d+'/data.json', 'r') as datafile:
+				data = json.load(datafile)
+				data['sid'] = d
+				projects.append(data)
+	print(projects)
+	return render_template('viewposts.html', projects=projects)
 
-@app.route('/view/<sid>', methods=['GET'])
+@app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
 	# Handle database lookups here
 	projectName = "Simplified Turk Machine"
 	projectDescription = "We want to create a Turk System for developers"
 	lookingFor = "Web Developer, Database Engineer"
+	numPost = getNumPosts()
 	if int(sid) > getNumPosts():
 		return redirect('/posts')
 	else:
-		return render_template('post.html', 
-			id=sid, 
-			projectName=projectName,
-			projectDescription=projectDescription,
-			lookingFor=lookingFor)
+		with open('assets/'+sid+'/data.json', 'r') as datafile:
+			data = json.load(datafile)
+			print(data)
+			return render_template('post.html', 
+				id=sid, 
+				data=data)
 
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
 	# handle looking up id
 	# replace later to demo
-	return send_file('assets/'+sid+'/'+os.listdir(curr_dir+sid)[0], attachment_filename='spec.pdf')
+	numPost = getNumPosts()
+	with open('assets/'+sid+'/data.json', 'r') as datafile:
+		data = json.load(datafile)
+		filename = data['filename']
+		fileIndex = os.listdir(curr_dir+sid).index(filename)
+		print(fileIndex, os.listdir(curr_dir+sid)[fileIndex])
+		return send_file('assets/'+sid+'/'+os.listdir(curr_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
 def getNumPosts():
 	# curr_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
