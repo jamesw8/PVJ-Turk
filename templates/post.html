@@ -16,16 +16,16 @@
 <div class="container-fluid">
   <div class="row" style="padding:0;">
     <div class="col-md-8" style="">
-      <iframe align="center" src="/get_spec/{{ id }}" width="80%" height="700px" style="display: block; margin: 0 auto; margin-top: 50px;">
+      <iframe align="center" src="/get_spec/{{ data['sid'] }}" width="80%" height="700px" style="display: block; margin: 0 auto; margin-top: 50px;">
       </iframe>
     </div>
     <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
       <h3>Interested? Bid here.</h3>
-      <form name="submitbid" action="/view/{{ id }}" method="post">
+      <form name="submitbid" action="/view/{{ data['sid'] }}" method="post">
         <div class="row">
           <div class="form-group col-m-4">
             <label>Specialties</label>
-            <input type="text" class="form-control" placeholder="Specialties" name="specialties" required>
+            <input type="text" class="form-control" placeholder="Specialties" name="devTypes" required>
           </div>
         </div>
         <div class="row">
@@ -52,6 +52,26 @@
           </div>
         </div>
       </form>
+      {% for bid in data['bids'] %}
+      <div class="row">
+        <div class="col-md-11">
+          <!-- <a href="view/{{ data['sid'] }}" style="text-decoration: none; color:gray"> -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                ${{ bid['price'] }}
+              </div>
+              <div class="panel-body">
+                <ul>
+                  <li>Specialties: {{ bid['devTypes'] }}</li>
+                  <li>Team Size: {{ bid['teamSize'] }}</li>
+                  <li>Deadline: {{ bid['proposedDeadline'] }}</li>
+                </ul>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>
