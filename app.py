@@ -4,15 +4,53 @@
 # - convert inline css to external css
 # - authentication
 
-from flask import Flask, render_template, request, send_file, session, redirect
+from flask import Flask, render_template, request, send_file, session, redirect, url_for
 from werkzeug import generate_password_hash, check_password_hash
 import os
 import json
 import csv
 
 app = Flask(__name__)
+app.secret_key = 'pvj-dev'
 
 assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
+
+def authenticateUser(email, password):
+	with open('users.csv') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['Email'] == email:
+				print('Matched email')
+				print(check_password_hash(row['Password_Hash'], password))
+				if check_password_hash(row['Password_Hash'], password):
+					session['Email'] = row['Email']
+					session['UserType'] = row['UserType']
+					session['Status'] = row['Status']
+					print(session)
+					print('True')
+					return True
+				print('False')
+				return False
+
+def createUser(firstname, lastname, email, password, usertype):
+	try:
+		headers = ['FirstName','LastName','Email','Password_Hash','UserType','Status']
+		with open('users.csv', 'a') as csvfile:
+			writer = csv.DictWriter(csvfile, headers)
+			writer.writerow({
+				headers[0]: firstname,
+				headers[1]: lastname,
+				headers[2]: email,
+				headers[3]: generate_password_hash(password),
+				headers[4]: usertype,
+				headers[5]: 'Pending'
+			})
+			session['Email'] = email
+			session['UserType'] = usertype
+			session['Status'] = 'Pending'
+		return True
+	except:
+		return False
 
 @app.route('/', methods=['GET'])
 def index():
@@ -21,12 +59,31 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 	print(request.method,request.form)
+	if 'Email' in session:
+		return redirect(url_for('viewPosts'))
+	if request.method == 'POST':
+	# authenticateUser(request.form['email'], request.form['password'])
+		if createUser(request.form['firstName'], request.form['lastName'], request.form['email'], request.form['password'], request.form['UserType']):
+			return redirect(url_for('viewPosts'))
 	return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	print(request.method,request.form)
+	if 'Email' in session:
+		return redirect(url_for('viewPosts'))
+	if request.method =='POST':
+		if authenticateUser(request.form['email'], request.form['password']):
+			return redirect(url_for('viewPosts'))
 	return render_template('login.html')
+
+@app.route('/logout', methods=['GET'])
+def logout():
+	if 'Email' in session:
+		session.pop('Email')
+		session.pop('UserType')
+		session.pop('Status')
+	return redirect(url_for('index'))
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
@@ -56,14 +113,16 @@ def createPost():
 
 @app.route('/posts', methods=['GET'])
 def viewPosts():
-	projects = []
-	for d in os.listdir(assets_dir):
-		if os.path.isdir(assets_dir+d):
-			with open('assets/'+d+'/data.json', 'r') as datafile:
-				data = json.load(datafile)
-				projects.append(data)
-	print(projects)
-	return render_template('viewposts.html', projects=projects)
+	if 'Email' in session:
+		projects = []
+		for d in os.listdir(assets_dir):
+			if os.path.isdir(assets_dir+d):
+				with open('assets/'+d+'/data.json', 'r') as datafile:
+					data = json.load(datafile)
+					projects.append(data)
+		print(projects)
+		return render_template('viewposts.html', projects=projects)
+	return redirect(url_for('login'))
 
 @app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
@@ -122,29 +181,4 @@ def getNumPosts():
 # Run Flask web server
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
-	app.run(debug=True, host='0.0.0.0', port=port, threaded=True)
-
-def authenticateUser(email, password):
-	with open('users.csv') as csvfile:
-		reader = csv.DictReader(csvfile)
-		for row in reader:
-			if row['Email'] == email:
-				if check_password_hash(row['Password_Hash'], password):
-					session['Email'] = row['Email']
-					session['UserType'] = row['UserType']
-					session['Status'] = row['Status']
-					return True
-				return False
-
-def createUser(firstname, lastname, email, password, usertype):
-	headers = ['FirstName','LastName','Email','Password_Hash','UserType','Status']
-	with open('users.csv', 'a') as csvfile:
-		writer = csv.DictWriter(csvfile, headers)
-		writer.writerow({
-			headers[0]: firstname,
-			headers[1]: lastname,
-			headers[2]: email,
-			headers[3]: generate_password_hash(password),
-			headers[4]: usertype,
-			headers[5]: 'Pending'
-		})
+	app.run(debug=True, host='0.0.0.0', port=port)
