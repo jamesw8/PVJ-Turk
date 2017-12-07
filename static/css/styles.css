@@ -1,3 +1,8 @@
+.jumbo {
+	position: relative;
+	z-index: 2;
+}
+
 .jumbotron {
 	margin-bottom: 0px;
 	background: url("https://static.pexels.com/photos/34950/pexels-photo.jpg") no-repeat center center;
@@ -15,15 +20,15 @@
 }
 
 .features {
-	width: 100%;
-	height: 20vh !important;
 }
 
 .feature-text {
-	padding-top: 50px;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: auto auto;
 	font-family: Open Sans;
 	font-size: 24px;
-	text-align: center;
 }
 
 i {
