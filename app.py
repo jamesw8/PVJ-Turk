@@ -4,13 +4,15 @@
 # - convert inline css to external css
 # - authentication
 
-from flask import Flask, render_template, request, send_file, redirect
+from flask import Flask, render_template, request, send_file, session, redirect
+from werkzeug import generate_password_hash, check_password_hash
 import os
 import json
+import csv
 
 app = Flask(__name__)
 
-curr_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
+assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
 @app.route('/', methods=['GET'])
 def index():
@@ -31,10 +33,10 @@ def createPost():
 	if request.method == 'POST':
 		print(request.files.getlist('specfile'))
 		specfile = request.files.getlist('specfile')
-		# curr_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
+		# assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 		numPost = str(getNumPosts() + 1)
-		if not os.path.exists(curr_dir + str(numPost)):
-			os.mkdir(curr_dir + numPost)
+		if not os.path.exists(assets_dir + str(numPost)):
+			os.mkdir(assets_dir + numPost)
 			data = {
 				'sid': numPost,
 				'devTypes': request.form['devTypes'],
@@ -47,16 +49,16 @@ def createPost():
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
 				json.dump(data, datafile)
 
-		print('dir',curr_dir+'/assets/'+numPost+'/'+specfile[0].filename)
-		specfile[0].save(curr_dir+numPost+'/'+specfile[0].filename)
+		print('dir',assets_dir+'/assets/'+numPost+'/'+specfile[0].filename)
+		specfile[0].save(assets_dir+numPost+'/'+specfile[0].filename)
 		return redirect('/view/'+numPost)
 	return render_template('createpost.html')
 
 @app.route('/posts', methods=['GET'])
 def viewPosts():
 	projects = []
-	for d in os.listdir(curr_dir):
-		if os.path.isdir(curr_dir+d):
+	for d in os.listdir(assets_dir):
+		if os.path.isdir(assets_dir+d):
 			with open('assets/'+d+'/data.json', 'r') as datafile:
 				data = json.load(datafile)
 				projects.append(data)
@@ -110,15 +112,39 @@ def getSpec(sid):
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
 		filename = data['filename']
-		fileIndex = os.listdir(curr_dir+sid).index(filename)
-		print(fileIndex, os.listdir(curr_dir+sid)[fileIndex])
-		return send_file('assets/'+sid+'/'+os.listdir(curr_dir+sid)[fileIndex], attachment_filename='spec.pdf')
+		fileIndex = os.listdir(assets_dir+sid).index(filename)
+		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
+		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
 def getNumPosts():
-	# curr_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
-	return sum(os.path.isdir(curr_dir+d) for d in os.listdir(curr_dir))
+	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
 
 # Run Flask web server
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
 	app.run(debug=True, host='0.0.0.0', port=port, threaded=True)
+
+def authenticateUser(email, password):
+	with open('users.csv') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['Email'] == email:
+				if check_password_hash(row['Password_Hash'], password):
+					session['Email'] = row['Email']
+					session['UserType'] = row['UserType']
+					session['Status'] = row['Status']
+					return True
+				return False
+
+def createUser(firstname, lastname, email, password, usertype):
+	headers = ['FirstName','LastName','Email','Password_Hash','UserType','Status']
+	with open('users.csv', 'a') as csvfile:
+		writer = csv.DictWriter(csvfile, headers)
+		writer.writerow({
+			headers[0]: firstname,
+			headers[1]: lastname,
+			headers[2]: email,
+			headers[3]: generate_password_hash(password),
+			headers[4]: usertype,
+			headers[5]: 'Pending'
+		})
