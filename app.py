@@ -278,6 +278,23 @@ def getSpec(sid):
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
+@app.route('/rate/<sid>', methods=['POST'])
+def postRating(sid):
+	id_for_review = -1
+	with open('assets/'+sid+'/data.json', 'r') as datafile:
+		data = json.load(datafile)
+		form = request.form.copy()
+		if form['taken'] == session['id']:
+			id_for_review = form['cid']
+		else:
+			id_for_review = form['taken']
+	user_data = getUser(id_for_review, ['Rating', 'Rating_Count'])
+	total_score = user_data[0]*user_data[1]
+	total_score += request.form['Rating']
+	new_rating = total_score/user_data[1]
+	updateUser(id_for_review, 'Rating', new_rating)
+	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
+	return redirect(url_for('index'))
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
