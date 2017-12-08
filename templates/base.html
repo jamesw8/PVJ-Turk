@@ -32,6 +32,9 @@
 						<li><a href="/signup">Sign Up</a></li>
 						<li><a href="/login">Login</a></li>
 					{% else %}
+						{% if session['UserType'] == 'Admin' %}
+							<li><a href="/approve">Approvals</a></li>
+						{% endif %}
 						<li><a href="/posts">Posts</a></li>
 						<li><a href="/logout">Logout</a></li>
 					{% endif %}
