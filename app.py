@@ -256,11 +256,10 @@ def viewPost(sid):
 
 @app.route('/view/<sid>/accept', methods=['POST'])
 def acceptBid(sid):
-
-with open('assets/'+sid+'/data.json', 'r+') as datafile:
-	data = json.load(datafile)
-	if data['bids']:
-		bids = data['bids']
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
+		data = json.load(datafile)
+		if data['bids']:
+			bids = data['bids']
 
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
@@ -290,10 +289,10 @@ def postRating(sid):
 	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
 	return redirect(url_for('index'))
 
-@app.route('/balance', method=['POST'])
+@app.route('/balance', methods=['POST'])
 def postBalance():
 	change = request.form['amount']
-	if request.form['type'] = 'withdraw':
+	if request.form['type'] == 'withdraw':
 		change *= -1
 	updateUser(session['id'], 'Balance', change)
 
