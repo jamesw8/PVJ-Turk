@@ -241,6 +241,10 @@ def getSpec(sid):
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
+@app.route('/messaging/', methods=['GET'])
+def messaging():
+	return render_template("messaging.html")
+
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
 
