@@ -244,7 +244,7 @@ def getSpec(sid):
 @app.route('/complaints/', methods=['GET'])
 def complaints():
 	allComplaints = []
-	with open("complaints.csv") as csvfile:
+	with open("complaints.csv", "r") as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
 			oneComplaint = []
@@ -261,7 +261,20 @@ def complaints():
 @app.route('/complaints/compose', methods=['GET','POST'])
 def composeComplaint():
 	if request.method == "POST":
-		pass
+		#Skip already filled in rows
+		complaintCount = 0
+		with open("complaints.csv", "r") as csvfile:
+			complaintCount = len(list(csv.DictReader(csvfile)))
+		#Write to csv
+		with open("complaints.csv", "a") as csvfile:
+			writer = csv.DictWriter(csvfile)
+			writer.writerow({
+				"ID": session["id"],
+				"Date": request.form["date"],
+				"Type": "Sent",
+				"Message": request.form["message"]
+				})
+		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
 
 def getNumPosts():
