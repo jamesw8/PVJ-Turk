@@ -225,6 +225,7 @@ def createPost():
 				'bidDeadline': request.form['bidDeadline'],
 				'filename': specfile[0].filename,
 				'taken': 0,
+				'submitted': False,
 				'bids': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
@@ -423,6 +424,10 @@ def postRating(sid):
 			id_for_review = form['cid']
 		else:
 			id_for_review = form['taken']
+	if rating < 3:
+		if request.form['Description'] == '':
+			flash('Please submit reason for this rating')
+			return redirect(url_for('viewPost', sid=sid))
 	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
 	total_score = user_data[0]*user_data[1]
 	total_score += request.form['Rating']
