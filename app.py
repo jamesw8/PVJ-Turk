@@ -55,7 +55,7 @@ def getUserInfo(id, attributes):
 				break
 	return retval
 
-def changeUser(id, column, newValue):
+def updateUser(id, column, newValue):
 	global headers
 	rows = []
 	with open('users.csv', 'r') as csvfile:
@@ -162,7 +162,7 @@ def accepted():
 	print('what')
 	if request.method == 'POST':
 		print('good')
-		changeUser(session['id'], 'Status', 'Normal')
+		updateUser(session['id'], 'Status', 'Normal')
 		return redirect(url_for('viewPosts'))
 	return render_template('accepted.html')
 
@@ -282,7 +282,7 @@ def postRating(sid):
 			id_for_review = form['cid']
 		else:
 			id_for_review = form['taken']
-	user_data = getUser(id_for_review, ['Rating', 'Rating_Count'])
+	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
 	total_score = user_data[0]*user_data[1]
 	total_score += request.form['Rating']
 	new_rating = total_score/user_data[1]
