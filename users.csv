@@ -1,10 +1,11 @@
-id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance
-1,q,q,q@aq,pbkdf2:sha256:50000$Q2pVijGp$ec703787ad261013d29eda470a442adbb0b737fd805b2dbdb1454a54d6da13a2,Client,Temporary,0
-2,a,a,a@a,pbkdf2:sha256:50000$jSSNjCP1$21d2afa7cbb9858005c099b69a7b791fd714f4679b2abf3d85561b6560989dda,Client,Normal,0
-3,b,b,b@b,pbkdf2:sha256:50000$SAZEEUkV$a25209d2f6942b90c65d14ad185c0698a1ae7e2e683fc46fa8b782081435cc68,Client,Rejected,0
-4,c,c,c@c,pbkdf2:sha256:50000$ParCKjXr$558f1182f9cd85318e85cb7cb4ff8284d55585abc3e9f682cb7518648de03310,Developer,Normal,0
-5,d,d,d@d,pbkdf2:sha256:50000$zm8vDNTY$9b42391923daf53ebe293ae774da2110397af87ab61091d97be6687f666bf7b6,Client,Temporary,
-6,e,e,e@e,pbkdf2:sha256:50000$Yvyekizj$3b326f6efa6eb3fcab4810832f4be5debf9f1ed7b9f81bda7f05cde0f6683ad6,Client,Temporary,0
-7,aaaa,bbbb,aaa@aaa.com,pbkdf2:sha256:50000$OItJW9PB$346286485277b8c024bad8219b5a67cb155c4fdf16ecf02831266aa1466105b4,Client,Temporary,0
-8,a,b,c@d,pbkdf2:sha256:50000$z5TBvRGE$a298787badf46d3170a8ded68c50238cc80f8b8b4ddc469c08557c48753fe13d,Developer,Temporary,0
-9,t,v,a@b,pbkdf2:sha256:50000$lGZx1RTg$8728029810347be0f31d1d6571724d29fb153af3d8e4908d107c91542c066055,Client,Temporary,0,0,0
+id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance,Rating,Rating_Count,Note
+1,q,q,q@aq,pbkdf2:sha256:50000$Q2pVijGp$ec703787ad261013d29eda470a442adbb0b737fd805b2dbdb1454a54d6da13a2,Client,Rejected,0,,,eqw
+2,a,a,a@a,pbkdf2:sha256:50000$jSSNjCP1$21d2afa7cbb9858005c099b69a7b791fd714f4679b2abf3d85561b6560989dda,Client,Rejected,0,,,nonono
+3,b,b,b@b,pbkdf2:sha256:50000$SAZEEUkV$a25209d2f6942b90c65d14ad185c0698a1ae7e2e683fc46fa8b782081435cc68,Client,Rejected,0,,,
+4,c,c,c@c,pbkdf2:sha256:50000$ParCKjXr$558f1182f9cd85318e85cb7cb4ff8284d55585abc3e9f682cb7518648de03310,Developer,Normal,0,,,
+5,d,d,d@d,pbkdf2:sha256:50000$zm8vDNTY$9b42391923daf53ebe293ae774da2110397af87ab61091d97be6687f666bf7b6,Client,Accepted,,,,
+6,e,e,e@e,pbkdf2:sha256:50000$Yvyekizj$3b326f6efa6eb3fcab4810832f4be5debf9f1ed7b9f81bda7f05cde0f6683ad6,Client,Rejected,0,,,Ok... Not great though
+7,aaaa,bbbb,aaa@aaa.com,pbkdf2:sha256:50000$OItJW9PB$346286485277b8c024bad8219b5a67cb155c4fdf16ecf02831266aa1466105b4,Client,Rejected,0,,,qeq wq qeq
+8,a,b,c@d,pbkdf2:sha256:50000$z5TBvRGE$a298787badf46d3170a8ded68c50238cc80f8b8b4ddc469c08557c48753fe13d,Developer,Rejected,0,,,This won't break
+9,t,v,a@b,pbkdf2:sha256:50000$lGZx1RTg$8728029810347be0f31d1d6571724d29fb153af3d8e4908d107c91542c066055,Client,Temporary,0,0,,0
+10,Admin,Root,admin@admin,pbkdf2:sha256:50000$lJS3VDfB$d939209a35ab640b2278c44a1134e70383c2f6c46ec9ad964a05417af5bb0003,Admin,Temporary,0,0,,0
