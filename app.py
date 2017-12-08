@@ -340,12 +340,13 @@ def acceptBid(sid, bid):
 			for b in bids:
 				if b['bid'] == bid:
 					winBid = b['price']
-					winner = b['bid']
-					data['taken'] = winner
+					winningBid = b['bid']
+					data['taken'] = winningBid
+					data['winner'] = b['bidder']['id']
 
 					maxBid = int(winBid)
-					for b in bids:
-						maxBid = (int(b['price']) if int(b['price']) > maxBid else maxBid)
+					for otherBid in bids:
+						maxBid = (int(otherBid['price']) if int(otherBid['price']) > maxBid else maxBid)
 					if maxBid > int(winBid):
 						print(maxBid, int(winBid))
 						# reset file for overwrite
@@ -377,6 +378,20 @@ def getSpec(sid):
 		fileIndex = os.listdir(assets_dir+sid).index(filename)
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
+
+@app.route('/statistics', methods=['GET'])
+def getStatistics():
+	clients = 0
+	devs = 0
+
+	with open('users.csv') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['Status'] == 'Normal':
+				if row['UserType'] == 'Client':
+					clients += 1
+				elif row['UserType'] == 'Developer':
+					devs += 1
 
 @app.route('/complaints/', methods=['GET'])
 def complaints():
