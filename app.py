@@ -392,8 +392,8 @@ def complaints():
 				oneComplaint.append(row["Date"])
 				oneComplaint.append(row["Type"])
 				oneComplaint.append(row["Message"])
-			#Append one complaint to all complaints
-			allComplaints.append(oneComplaint)
+				#Append one complaint to all complaints
+				allComplaints.append(oneComplaint)
 	return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
 
 @app.route('/complaints/compose', methods=['GET','POST'])
