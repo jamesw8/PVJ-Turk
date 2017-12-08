@@ -31,6 +31,8 @@ def createSuperUser():
 					print(row)
 					if row['UserType'] == 'Admin':
 						hasSU = True
+			except:
+				pass
 			if not hasSU:
 				writer = csv.DictWriter(csvfile, headers)
 				writer.writerow({
@@ -432,7 +434,8 @@ def getSpec(sid):
 def getStatistics():
 	clients = 0
 	devs = 0
-
+	number_of_projects = 0
+	# count usertypes
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
@@ -441,6 +444,50 @@ def getStatistics():
 					clients += 1
 				elif row['UserType'] == 'Developer':
 					devs += 1
+
+	# id:count
+	clientProjects = {}
+	developerMoney = {}
+
+	# count projects for devs
+	for d in os.listdir(assets_dir):
+			if os.path.isdir(assets_dir+d):
+				number_of_projects += 1
+				with open('assets/'+d+'/data.json', 'r') as datafile:
+					data = json.load(datafile)
+					clientProjects[data['cid']] = clientProjects.get(data['cid'], 0) + 1
+					if data['taken'] != '0':
+						for bid in data['bids']:
+							if data['taken'] == bid['bid']:
+								if data['submitted']:
+									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + bid['price']
+								else:	
+									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + int(bid['price'])/2
+	name = ()
+	maxMoney = 0
+	for key,val in developerMoney.items():
+		if maxMoney < val:
+			maxMoney = val
+			name = getUserInfo(key, ['FirstName', 'LastName'])
+	maxDeveloper = name[1] + ', ' + name[0]
+	
+	maxProjects = 0
+	for key,val in clientProjects.items():
+		if maxProjects < val:
+			maxProjects = val
+			name = getUserInfo(key, ['FirstName', 'LastName'])
+	maxClient = name[1] + ', ' + name[0]
+	stats = {
+		'Number of Clients Registered':clients,
+		'Number of Developers Registered':devs,
+		'Number of Projects':number_of_projects,
+		'Most Projects':{maxClient:' has the most projects with a count of ' + str(maxProjects)},
+		'Most Money Made':{maxDeveloper:' has made the most money with a gain of ' + str(maxMoney)}
+	}
+
+	print(stats)	
+	return render_template('statistics.html', stats=stats)
+		# str(clients) + '\n' + str(devs) + '\n' + str(number_of_projects) + '\n' + json.dumps(clientProjects) + '\n' + json.dumps(developerMoney)
 
 @app.route('/complaints/', methods=['GET'])
 def complaints():
