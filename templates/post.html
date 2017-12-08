@@ -77,27 +77,29 @@
           </form>
         </div>
       {% elif session['id'] == data['cid'] and data['taken'] != '0' %}
-       {% if data['reason'] == '' %}
-          <div class="col-md-4" style="margin-top: 50px; padding-right:50 px;">
-            <h3>Please input reason for choosing the smaller bid</h3>
-            <form name="submitreason" action="/view/{{ data['sid'] }}/reason" method="post">
-              <div class="row">
-                <div class="form-group col-m-4">
-                  <label>Reason</label>
-                  <input type="text" class="form-control" placeholder="Reason" name="reason" required>
+       {% if 'reason' in data %}
+         {% if data['reason'] == '' %}
+            <div class="col-md-4" style="margin-top: 50px; padding-right:50 px;">
+              <h3>Please input reason for choosing the smaller bid</h3>
+              <form name="submitreason" action="/view/{{ data['sid'] }}/reason" method="post">
+                <div class="row">
+                  <div class="form-group col-m-4">
+                    <label>Reason</label>
+                    <input type="text" class="form-control" placeholder="Reason" name="reason" required>
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="form-group col-xs-12">
-                  <button type="submit" class="btn btn-default">Submit Reason</button>
+                <div class="row">
+                  <div class="form-group col-xs-12">
+                    <button type="submit" class="btn btn-default">Submit Reason</button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </div>
-        {% else %}
-          <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
-            <h3>Inquiries/Requests? Email {{ data['bemail'] }}.</h3>
-          </div>
+              </form>
+            </div>
+          {% else %}
+            <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
+              <h3>Inquiries/Requests? Email {{ data['bemail'] }}.</h3>
+            </div>
+          {% endif %}
         {% endif %}
       {% endif %}
     {% endif%}
