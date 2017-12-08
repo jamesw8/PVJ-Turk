@@ -6,7 +6,7 @@
 			<h1>{{ data['projectName'] }}</h1>
       <h4>I am looking for... <strong>{{ data['devTypes'] }}</strong>{% if data['deadline'] %} to complete the task by <strong>{{ data['deadline'] }}</strong></h4>
       {% endif %}
-      {% if data['taken'] == 0 %}
+      {% if data['taken'] == '0' and data['active'] %}
         <h4>Bidding ends <strong>{{ data['bidDeadline'] }}</strong></h4>
       {% else %}
         <h4><strong>Bidding ended</strong></h4>
@@ -22,54 +22,97 @@
       <iframe align="center" src="/get_spec/{{ data['sid'] }}" width="80%" height="700px" style="display: block; margin: 0 auto; margin-top: 50px;">
       </iframe>
     </div>
-    {% if data['taken'] == 0 %}
-      <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
-        <h3>Interested? Bid here.</h3>
-        <form name="submitbid" action="/view/{{ data['sid'] }}" method="post">
-          <div class="row">
-            <div class="form-group col-m-4">
-              <label>Specialties</label>
-              <input type="text" class="form-control" placeholder="Specialties" name="devTypes" required>
+    {% if session['Status'] == 'Normal' %}
+      {% if not data['cid'] == session['id'] and data['taken'] == '0' and data['active'] %}
+        <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
+          <h3>Interested? Bid here.</h3>
+          <form name="submitbid" action="/view/{{ data['sid'] }}" method="post">
+            <div class="row">
+              <div class="form-group col-m-4">
+                <label>Specialties</label>
+                <input type="text" class="form-control" placeholder="Specialties" name="devTypes" required>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="form-group col-m-4">
-            <label>Team Size</label>
-            <input type="number" class="form-control" placeholder="Team Size" name="teamSize" required>
+            <div class="row">
+              <div class="form-group col-m-4">
+              <label>Team Size</label>
+              <input type="number" class="form-control" placeholder="Team Size" name="teamSize" required>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="form-group col-m-4">
-            <label>Price ($)</label>
-            <input type="number" class="form-control" placeholder="Price" name="price" required>
+            <div class="row">
+              <div class="form-group col-m-4">
+              <label>Price ($)</label>
+              <input type="number" class="form-control" placeholder="Price" name="price" required>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="form-group col-m-4">
-            <label>Proposed Deadline</label>
-            <input type="date" class="form-control" placeholder="Proposed Deadline" name="proposedDeadline" required>
+            <div class="row">
+              <div class="form-group col-m-4">
+              <label>Proposed Deadline</label>
+              <input type="date" class="form-control" placeholder="Proposed Deadline" name="proposedDeadline" required>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="form-group col-xs-12">
-              <button type="submit" class="btn btn-default">Submit Bid</button>
+            <div class="row">
+              <div class="form-group col-xs-12">
+                <button type="submit" class="btn btn-default">Submit Bid</button>
+              </div>
             </div>
+          </form>
+        </div>
+      {% elif session['id'] == data['taken'] %}
+        <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
+          <h3>Questions? Email {{ data['cemail'] }}.</h3>
+          <h4>Submit repository link when system is completed</h4>
+          <form name="submitrepo" action="/view/{{ data['sid'] }}/submit" method="post">
+            <div class="row">
+              <div class="form-group col-m-4">
+                <label>Repo</label>
+                <input type="text" class="form-control" placeholder="Repository Link" name="repolink" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-xs-12">
+                <button type="submit" class="btn btn-default">Submit System</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      {% elif session['id'] == data['cid'] and data['taken'] != '0' %}
+       {% if data['reason'] == '' %}
+          <div class="col-md-4" style="margin-top: 50px; padding-right:50 px;">
+            <h3>Please input reason for choosing the smaller bid</h3>
+            <form name="submitreason" action="/view/{{ data['sid'] }}/reason" method="post">
+              <div class="row">
+                <div class="form-group col-m-4">
+                  <label>Reason</label>
+                  <input type="text" class="form-control" placeholder="Reason" name="reason" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-xs-12">
+                  <button type="submit" class="btn btn-default">Submit Reason</button>
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    {% endif %}
+        {% else %}
+          <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
+            <h3>Inquiries/Requests? Email {{ data['bemail'] }}.</h3>
+          </div>
+        {% endif %}
+      {% endif %}
+    {% endif%}
   </div>
 </div>
-  <br>
+<br>
 {% for bid in data['bids'] %}
-  {% if not data['taken'] or bid['bid'] == data['taken'] %}
+  {% if data['taken'] == '0' or bid['bid'] == data['taken'] %}
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-          {% if session['id'] == data['cid'] and not data['taken'] %}
+          {% if session['id'] == data['cid'] and data['taken'] == '0' %}
             <a href="{{ url_for('acceptBid', sid=data['sid'], bid=bid['bid']) }}" style="text-decoration: none; color:gray">
           {% endif %}
-            <div class="panel panel-success">
+            <div class="panel {% if bid['bid'] == data['taken'] %}panel-success{% else %}panel-default{% endif %}">
               <div class="panel-heading">
                 ${{ bid['price'] }}
               </div>
