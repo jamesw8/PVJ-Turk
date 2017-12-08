@@ -199,6 +199,11 @@ def accepted():
 	if request.method == 'POST':
 		print('good')
 		updateUser(session['id'], 'Status', 'Normal')
+		data = {}
+		with open('users/user.json', 'w') as userdata:
+			# data = json.load(userdata)
+			data['form'] = request.form
+			json.dump(data, userdata)
 		session['Status'] = 'Normal'
 		return redirect(url_for('viewPosts'))
 	return render_template('accepted.html')
@@ -436,10 +441,6 @@ def getSpec(sid):
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
-@app.route('/user', methods=['GET'])
-def viewUser():
-	return render_template('user.html')
-
 @app.route('/statistics', methods=['GET'])
 def getStatistics():
 	clients = 0
@@ -579,8 +580,18 @@ def getUser():
 	global headers
 	print(session['id'])
 	user_details = getUserInfo(session['id'], headers)
-	print(user_details)
-	return render_template('user.html', user_details=user_details)
+	userjson = {}
+	with open('users/user.json', 'r+') as userdata:
+		userjson = json.load(userdata)
+	user = {}
+	for header in range(len(headers)):
+		if headers[header] in ['Password_Hash', 'id']:
+			continue
+		user[headers[header]] = user_details[header]
+	for key in userjson['form']:
+		print(key, userjson['form'][key])
+	print(user)
+	return render_template('user.html', user_details=user, userjson=userjson['form'])
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
