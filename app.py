@@ -193,7 +193,8 @@ def viewPosts():
 			if os.path.isdir(assets_dir+d):
 				with open('assets/'+d+'/data.json', 'r') as datafile:
 					data = json.load(datafile)
-					if datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d"):
+					if (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d")) \
+					and str(data['taken']) == '0':
 						projects.append(data)
 		print(projects)
 		return render_template('viewposts.html', projects=projects)
@@ -201,15 +202,7 @@ def viewPosts():
 
 @app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
-	# Handle database lookups here
-	# projectName = "Simplified Turk Machine"
-	# projectDescription = "We want to create a Turk System for developers"
-	# lookingFor = "Web Developer, Database Engineer"
-	
-	# redirect if doesn't exist
 	numPost = getNumPosts()
-	# if int(sid) > getNumPosts():
-	# 	return redirect('/posts')
 
 	if request.method == 'POST':
 		print(request.form)
@@ -239,7 +232,6 @@ def viewPost(sid):
 			return redirect(url_for('viewPosts'))
 
 	try:
-		# render template from data
 		with open('assets/'+sid+'/data.json', 'r') as datafile:
 			data = json.load(datafile)
 			print(data)
@@ -248,14 +240,16 @@ def viewPost(sid):
 	except:
 		return redirect(url_for('viewPosts'))
 
-@app.route('/view/<sid>/accept')
+@app.route('/view/<sid>/accept', methods=['POST'])
 def acceptBid(sid):
-	pass
 
+with open('assets/'+sid+'/data.json', 'r+') as datafile:
+	data = json.load(datafile)
+	if data['bids']:
+		bids = data['bids']
+	
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
-	# handle looking up id
-	# replace later to demo
 	numPost = getNumPosts()
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
