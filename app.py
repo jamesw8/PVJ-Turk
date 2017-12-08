@@ -311,6 +311,13 @@ def postRating(sid):
 	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
 	return redirect(url_for('index'))
 
+@app.route('/balance', methods=['POST'])
+def postBalance():
+	change = request.form['amount']
+	if request.form['type'] == 'withdraw':
+		change *= -1
+	updateUser(session['id'], 'Balance', change)
+
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
 
