@@ -212,7 +212,12 @@ def viewPost(sid):
 				bids = data['bids']
 			else:
 				bids = []
-			bids.append(request.form)
+			form = request.form.copy()
+			form['bidder'] = {
+				'id': session['id'],
+				'firstname': session['FirstName']
+			}
+			bids.append(form)
 			data['bids'] = bids
 			# reset file for overwrite
 			datafile.seek(0)
