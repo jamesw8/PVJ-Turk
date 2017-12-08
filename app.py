@@ -18,6 +18,38 @@ assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
 headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance', 'Rating', 'Rating_Count','Note']
 
+def createSuperUser():
+	global headers
+	try:
+		hasSU = False
+		with open('users.csv', 'r') as csvfile:
+			userCount = len(list(csv.DictReader(csvfile)))
+		with open('users.csv', 'r') as csvfile:
+			reader = csv.DictReader(csvfile)
+			try:
+				for row in reader:
+					print(row)
+					if row['UserType'] == 'Admin':
+						hasSU = True
+			if not hasSU:
+				writer = csv.DictWriter(csvfile, headers)
+				writer.writerow({
+					headers[0]: '0',
+					headers[1]: 'Super',
+					headers[2]: 'User',
+					headers[3]: 'SU@SU',
+					headers[4]: generate_password_hash('SUPER'),
+					headers[5]: 'Admin',
+					headers[6]: 'Normal',
+					headers[7]: 0,
+					headers[8]: 0,
+					headers[9]: 0
+				})
+		return True, ''
+	except ValueError as e:
+		print(str(e))
+		return False, str(e)
+
 def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
@@ -339,6 +371,17 @@ def acceptBid(sid, bid):
 			bids = data['bids']
 			for b in bids:
 				if b['bid'] == bid:
+
+					user_data = getUserInfo(session['id'], ['Balance'])
+					if b['price'] > user_data[0]:
+						flash('Insufficient funds')
+						return redirect(url_for('viewPost', sid=sid))
+					else:
+						updateUser(session['id'], 'Balance', user_data[0]-(b['price']/2))
+						dev_data = getUserInfo(b['bidder']['id'], ['Balance'])
+						updateUser(b['bidder']['id'], ['Balance'], dev_data[0]+(9*b['price']/20))
+						updateUser(0, 'Balance', (b['price']/20))
+
 					winBid = b['price']
 					winner = b['bid']
 					data['taken'] = winner
@@ -461,3 +504,4 @@ def getNumPosts():
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
 	app.run(debug=True, host='0.0.0.0', port=port, threaded=True)
+	createSuperUser()
