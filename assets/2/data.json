@@ -1,1 +1,71 @@
-{"cid": "4", "sid": "2", "devTypes": "Full Stack Engineer", "projectName": "Simplified Coding Turk Machine", "description": "We want to create a Turk Machine for Clients and Developers. Details in attached PDF.", "deadline": "December 14th, 2017", "bidDeadline": "2018-02-01", "filename": "Project_Spec_Specification.pdf", "taken": "2", "bids": [{"bid": "1", "devTypes": "Full Stack Engineers", "teamSize": "3", "price": "9000", "proposedDeadline": "Dec 22nd, 2017", "bidder": {"id": "2", "firstname": "a"}}, {"bid": "2", "devTypes": "Front End Developer, Back End Developer, Database Engineer", "teamSize": "3", "price": "12000", "proposedDeadline": "Dec 10th, 2017", "bidder": {"id": "2", "firstname": "a"}}, {"bid": "3", "devTypes": "AngularJS Developer, Back End Engineer", "teamSize": "2", "price": "7350", "proposedDeadline": "December 1st, 2017", "bidder": {"id": "2", "firstname": "a"}}, {"bid": "4", "devTypes": "Coder", "teamSize": "5", "price": "10000", "proposedDeadline": "2018-03-28", "bidder": {"id": "2", "firstname": "a"}}, {"bid": "5", "devTypes": "Programmers", "teamSize": "2", "price": "500", "proposedDeadline": "2018-01-06", "bidder": {"id": "2", "firstname": "a"}}], "reason": "None"}
+{
+    "cid": "4",
+    "sid": "2",
+    "devTypes": "Full Stack Engineer",
+    "projectName": "Simplified Coding Turk Machine",
+    "description": "We want to create a Turk Machine for Clients and Developers. Details in attached PDF.",
+    "deadline": "December 14th, 2017",
+    "bidDeadline": "2018-02-01",
+    "filename": "Project_Spec_Specification.pdf",
+    "taken": "1",
+    "bids": [
+        {
+            "bid": "1",
+            "devTypes": "Full Stack Engineers",
+            "teamSize": "3",
+            "price": "9000",
+            "proposedDeadline": "Dec 22nd, 2017",
+            "bidder": {
+                "id": "2",
+                "firstname": "a"
+            }
+        },
+        {
+            "bid": "2",
+            "devTypes": "Front End Developer, Back End Developer, Database Engineer",
+            "teamSize": "3",
+            "price": "12000",
+            "proposedDeadline": "Dec 10th, 2017",
+            "bidder": {
+                "id": "2",
+                "firstname": "a"
+            }
+        },
+        {
+            "bid": "3",
+            "devTypes": "AngularJS Developer, Back End Engineer",
+            "teamSize": "2",
+            "price": "7350",
+            "proposedDeadline": "December 1st, 2017",
+            "bidder": {
+                "id": "2",
+                "firstname": "a"
+            }
+        },
+        {
+            "bid": "4",
+            "devTypes": "Coder",
+            "teamSize": "5",
+            "price": "10000",
+            "proposedDeadline": "2018-03-28",
+            "bidder": {
+                "id": "2",
+                "firstname": "a"
+            }
+        },
+        {
+            "bid": "5",
+            "devTypes": "Programmers",
+            "teamSize": "2",
+            "price": "500",
+            "proposedDeadline": "2018-01-06",
+            "bidder": {
+                "id": "2",
+                "firstname": "a"
+            }
+        }
+    ],
+    "reason": "Eh..",
+    "winner": "2",
+    "submitted": false
+}
