@@ -188,7 +188,7 @@ def viewPosts():
 			if os.path.isdir(assets_dir+d):
 				with open('assets/'+d+'/data.json', 'r') as datafile:
 					data = json.load(datafile)
-					if datetime.strptime(data['bidDeadline']) < datetime.strptime(datetime.date.today()):
+					if datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d"):
 						projects.append(data)
 		print(projects)
 		return render_template('viewposts.html', projects=projects)
