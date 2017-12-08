@@ -16,7 +16,7 @@ app.secret_key = 'pvj-dev'
 
 assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
-headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance', 'Rating', 'Rating_Count']
+headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance', 'Rating', 'Rating_Count','Note']
 
 def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
@@ -28,7 +28,7 @@ def authenticateUser(email, password):
 				if check_password_hash(row['Password_Hash'], password):
 					if row['Status'] == 'Rejected':
 						# Need to retrieve reason for rejection
-						return False, 'This account has been rejected for the following reason:'
+						return False, 'This account has been rejected for the following reason: ' + row['Note']
 					session['id'] = row['id']
 					session['FirstName'] = row['FirstName']
 					session['Email'] = row['Email']
@@ -165,6 +165,40 @@ def accepted():
 		updateUser(session['id'], 'Status', 'Normal')
 		return redirect(url_for('viewPosts'))
 	return render_template('accepted.html')
+
+@app.route('/approve', methods=['GET', 'POST'])
+def approve():
+	if session['UserType'] != 'Admin':
+		return redirect(url_for('index'))
+	users = []
+	with open('users.csv', 'r') as csvfile:
+		reader = csv.DictReader(csvfile)
+		try:
+			for row in reader:
+				print(row)
+				if row['Status'] == 'Temporary':
+					users.append(row)
+		except:
+			print('Error showing /approve')
+	return render_template('viewpending.html', users=users)
+
+@app.route('/approve/<id>', methods=['GET', 'POST'])
+def approveUser(id=None):
+	if session['UserType'] != 'Admin':
+		return redirect(url_for('index'))
+	updateUser(id, 'Status', 'Accepted')
+	return redirect(url_for('approve'))
+
+@app.route('/reject/<id>', methods=['GET', 'POST'])
+def rejectUser(id=None):
+	if session['UserType'] != 'Admin':
+		return redirect(url_for('index'))
+	print(request.form['rejection'])
+	updateUser(id, 'Status', 'Rejected')
+	print('Hi')
+	updateUser(id, 'Note', request.form['rejection'])
+	print('Hi2')
+	return redirect(url_for('approve'))
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
