@@ -16,7 +16,7 @@ app.secret_key = 'pvj-dev'
 
 assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
-headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance']
+headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance', 'Rating', 'Rating_Count']
 
 def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
@@ -42,6 +42,18 @@ def authenticateUser(email, password):
 						return True, ''
 				print(row['Email'], 'made a failed attempt to log in')
 				return False, 'Incorrect email/password.'
+
+def getUserInfo(id, attributes):
+	global headers
+	retval = []
+	with open('users.csv', 'r') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['id'] == str(id):
+				for att in attributes:
+					retval.append(row[att])
+				break
+	return retval
 
 def changeUser(id, column, newValue):
 	global headers
@@ -85,7 +97,9 @@ def createUser(firstname, lastname, email, password, usertype):
 				headers[4]: generate_password_hash(password),
 				headers[5]: usertype,
 				headers[6]: 'Temporary',
-				headers[7]: 0
+				headers[7]: 0,
+				headers[8]: 0,
+				headers[9]: 0
 			})
 			session['id'] = userCount+1
 			session['FirstName'] = firstname
@@ -205,7 +219,7 @@ def viewPost(sid):
 	# projectName = "Simplified Turk Machine"
 	# projectDescription = "We want to create a Turk System for developers"
 	# lookingFor = "Web Developer, Database Engineer"
-	
+
 	# redirect if doesn't exist
 	numPost = getNumPosts()
 	# if int(sid) > getNumPosts():
@@ -243,7 +257,7 @@ def viewPost(sid):
 		with open('assets/'+sid+'/data.json', 'r') as datafile:
 			data = json.load(datafile)
 			print(data)
-			return render_template('post.html',  
+			return render_template('post.html',
 				data=data)
 	except:
 		return redirect(url_for('viewPosts'))
@@ -263,6 +277,7 @@ def getSpec(sid):
 		fileIndex = os.listdir(assets_dir+sid).index(filename)
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
+
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
