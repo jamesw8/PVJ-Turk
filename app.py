@@ -22,6 +22,7 @@ def createSuperUser():
 	global headers
 	try:
 		hasSU = False
+
 		with open('users.csv', 'r') as csvfile:
 			userCount = len(list(csv.DictReader(csvfile)))
 		with open('users.csv', 'r') as csvfile:
@@ -470,7 +471,7 @@ def getStatistics():
 							if data['taken'] == bid['bid']:
 								if data['submitted']:
 									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + bid['price']
-								else:	
+								else:
 									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + int(bid['price'])/2
 	name = ()
 	maxMoney = 0
@@ -479,7 +480,7 @@ def getStatistics():
 			maxMoney = val
 			name = getUserInfo(key, ['FirstName', 'LastName'])
 	maxDeveloper = name[1] + ', ' + name[0]
-	
+
 	maxProjects = 0
 	for key,val in clientProjects.items():
 		if maxProjects < val:
@@ -494,7 +495,7 @@ def getStatistics():
 		'Most Money Made':{maxDeveloper:' has made the most money with a gain of ' + str(maxMoney)}
 	}
 
-	print(stats)	
+	print(stats)
 	return render_template('statistics.html', stats=stats)
 		# str(clients) + '\n' + str(devs) + '\n' + str(number_of_projects) + '\n' + json.dumps(clientProjects) + '\n' + json.dumps(developerMoney)
 
@@ -573,6 +574,13 @@ def postBalance():
 
 	return render_template('balance.html')
 
+@app.route('/user', methods=['GET'])
+def getUser():
+	global headers
+	print(session['id'])
+	user_details = getUserInfo(session['id'], headers)
+	print(user_details)
+	return render_template('user.html', user_details=user_details)
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))

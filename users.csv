@@ -9,3 +9,4 @@ id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance,Rating,Rating_
 8,a,b,c@d,pbkdf2:sha256:50000$z5TBvRGE$a298787badf46d3170a8ded68c50238cc80f8b8b4ddc469c08557c48753fe13d,Developer,Normal,0,,,This won't break
 9,t,v,a@b,pbkdf2:sha256:50000$lGZx1RTg$8728029810347be0f31d1d6571724d29fb153af3d8e4908d107c91542c066055,Client,Temporary,0,0,,0
 10,Admin,Root,admin@admin,pbkdf2:sha256:50000$lJS3VDfB$d939209a35ab640b2278c44a1134e70383c2f6c46ec9ad964a05417af5bb0003,Admin,Temporary,0,0,,0
+11,p,t,pt@pt,pbkdf2:sha256:50000$zTzufV8l$baa7dcf564be167c04c77630f756e0412068da308bc1405f3ab8c79639abdd1c,Client,Temporary,100000000,0,0,
