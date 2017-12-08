@@ -337,6 +337,12 @@ def submitProject(sid):
 		return redirect(url_for('signup'))
 	if session['Status'] != 'Normal':
 		return redirect('viewPost', sid=sid)
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
+		data = json.load(datafile)
+		if session['id'] == data['taken']:
+			data['submitted'] = True
+			# Need to update monies from client to superuser
+		json.dump(data, datafile)
 	return redirect(url_for('viewPost', sid=sid))
 
 @app.route('/view/<sid>/reason', methods=['POST'])
