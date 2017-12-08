@@ -23,7 +23,7 @@
       </iframe>
     </div>
     {% if session['Status'] == 'Normal' %}
-      {% if not data['cid'] == session['id'] and data['taken'] == '0' and data['active'] %}
+      {% if not session['id'] == data['cid'] and data['taken'] == '0' and data['active'] %}
         <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
           <h3>Interested? Bid here.</h3>
           <form name="submitbid" action="/view/{{ data['sid'] }}" method="post">
@@ -58,7 +58,7 @@
             </div>
           </form>
         </div>
-      {% elif session['id'] == data['taken'] %}
+      {% elif session['id'] == data['winner'] %}
 				{% if not data['submitted'] %}
 	        <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
 	          <h3>Questions? Email {{ data['cemail'] }}.</h3>
