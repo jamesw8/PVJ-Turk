@@ -311,12 +311,20 @@ def postRating(sid):
 	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
 	return redirect(url_for('index'))
 
-@app.route('/balance', methods=['POST'])
+@app.route('/balance', methods=['GET', 'POST'])
 def postBalance():
-	change = request.form['amount']
-	if request.form['type'] == 'withdraw':
+	if request.method == 'POST':
+		change = int(request.form['transactionAmount'])
+		user_data = getUserInfo(session['id'], ['Balance'])
+		print(user_data)
+		if request.form['transactionType'] == 'Deposit':
+			updateUser(session['id'], 'Balance', int(user_data[0])+change)
+			return redirect(url_for('viewPosts'))
+		if change > int(user_data[0]):
+			flash('Insufficient funds')
 		change *= -1
-	updateUser(session['id'], 'Balance', change)
+
+	return render_template('balance.html')
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
