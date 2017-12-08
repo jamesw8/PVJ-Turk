@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12 header">
+			<h1>Statistics</h1>
+		</div>
+	</div>
+</div>
+<br>
+<div class="container-fluid">
+{% for stat in stats %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					{{ stat }}
+				</div>
+				<div class="panel-body">
+					{% if stat == 'Most Projects' or stat == 'Most Money Made' %}
+					<ul class="project-list">
+						{% for key in stats[stat] %}
+							<li><strong>{{ key }}</strong> {{ stats[stat][key] }}</li>
+						{% endfor %}
+					</ul>
+					{% else %}
+						{{ stats[stat] }}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+{% endblock %}
