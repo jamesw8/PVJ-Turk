@@ -135,7 +135,7 @@ def login():
 	print(request.method,request.form)
 	if 'Email' in session:
 		return redirect(url_for('viewPosts'))
-	if request.method =='POST':
+	if request.method == 'POST':
 		authenticated, reason = authenticateUser(request.form['email'], request.form['password'])
 		if authenticated:
 			if reason:
@@ -345,6 +345,38 @@ def getSpec(sid):
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
+@app.route('/complaints/', methods=['GET'])
+def complaints():
+	allComplaints = []
+	with open("complaints.csv", "r") as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			oneComplaint = []
+			#Check matching ID
+			if session["id"] == row["id"]:
+				#Get all the messages with this ID
+				oneComplaint.append(row["Date"])
+				oneComplaint.append(row["Type"])
+				oneComplaint.append(row["Message"])
+			#Append one complaint to all complaints
+			allComplaints.append(oneComplaint)
+	return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
+
+@app.route('/complaints/compose', methods=['GET','POST'])
+def composeComplaint():
+	if request.method == "POST":
+		#Write to csv
+		with open("complaints.csv", "a") as csvfile:
+			writer = csv.DictWriter(csvfile, ["id", "Date", "Type", "Message"])
+			writer.writerow({
+				"id": session["id"],
+				"Date": request.form["date"],
+				"Type": "Sent",
+				"Message": request.form["message"]
+				})
+		return redirect(url_for("complaints"))
+	return render_template("composecomplaint.html")
+
 @app.route('/rate/<sid>', methods=['POST'])
 def postRating(sid):
 	if not 'Email' in session:
@@ -383,6 +415,7 @@ def postBalance():
 		change *= -1
 
 	return render_template('balance.html')
+
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
