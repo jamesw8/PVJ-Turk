@@ -1,4 +1,5 @@
-FirstName,LastName,Email,Password_Hash,UserType,Status
-q,q,q@aq,pbkdf2:sha256:50000$Q2pVijGp$ec703787ad261013d29eda470a442adbb0b737fd805b2dbdb1454a54d6da13a2,Client,Pending
-a,a,a@a,pbkdf2:sha256:50000$jSSNjCP1$21d2afa7cbb9858005c099b69a7b791fd714f4679b2abf3d85561b6560989dda,Client,Pending
-b,b,b@b,pbkdf2:sha256:50000$SAZEEUkV$a25209d2f6942b90c65d14ad185c0698a1ae7e2e683fc46fa8b782081435cc68,Client,Pending
+FirstName,LastName,Email,Password_Hash,UserType,Status,Balance
+q,q,q@aq,pbkdf2:sha256:50000$Q2pVijGp$ec703787ad261013d29eda470a442adbb0b737fd805b2dbdb1454a54d6da13a2,Client,Pending,0
+a,a,a@a,pbkdf2:sha256:50000$jSSNjCP1$21d2afa7cbb9858005c099b69a7b791fd714f4679b2abf3d85561b6560989dda,Client,Pending,0
+b,b,b@b,pbkdf2:sha256:50000$SAZEEUkV$a25209d2f6942b90c65d14ad185c0698a1ae7e2e683fc46fa8b782081435cc68,Client,Pending,0
+c,c,c@c,pbkdf2:sha256:50000$ParCKjXr$558f1182f9cd85318e85cb7cb4ff8284d55585abc3e9f682cb7518648de03310,Developer,Pending,0
