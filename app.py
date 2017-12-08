@@ -15,6 +15,8 @@ app.secret_key = 'pvj-dev'
 
 assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
+headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance']
+
 def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
@@ -26,22 +28,47 @@ def authenticateUser(email, password):
 					if row['Status'] == 'Rejected':
 						# Need to retrieve reason for rejection
 						return False, 'This account has been rejected for the following reason:'
+					session['id'] = row['id']
+					session['FirstName'] = row['FirstName']
 					session['Email'] = row['Email']
 					session['UserType'] = row['UserType']
 					session['Status'] = row['Status']
 					print(session)
 					print(row['Email'], 'has logged in')
-					return True, ''
+					if row['Status'] == 'Accepted':
+						return True, 'Congratulations, you have been accepted!'
+					else:
+						return True, ''
 				print(row['Email'], 'made a failed attempt to log in')
 				return False, 'Incorrect email/password.'
 
+def changeUser(id, column, newValue):
+	global headers
+	rows = []
+	with open('users.csv', 'r') as csvfile:
+		reader = csv.DictReader(csvfile)
+		edit = {}
+		for row in reader:
+			if row['id'] == str(id):
+				row[column] = newValue
+			rows.append(row)
+	with open('users.csv','w') as csvfile:
+		writer = csv.DictWriter(csvfile, headers)
+		writer.writeheader()
+		for row in rows:
+			writer.writerow(row)
+
 def createUser(firstname, lastname, email, password, usertype):
+	global headers
 	try:
-		headers = ['FirstName','LastName','Email','Password_Hash','UserType','Status']
+		userCount = 0
+		with open('users.csv', 'r') as csvfile:
+			userCount = len(list(csv.DictReader(csvfile)))
 		with open('users.csv', 'r') as csvfile:
 			reader = csv.DictReader(csvfile)
 			try:
 				for row in reader:
+					print(row)
 					if row['Email'] == email:
 						print('Email has already been registered!')
 						raise ValueError
@@ -50,13 +77,17 @@ def createUser(firstname, lastname, email, password, usertype):
 		with open('users.csv', 'a') as csvfile:
 			writer = csv.DictWriter(csvfile, headers)
 			writer.writerow({
-				headers[0]: firstname,
-				headers[1]: lastname,
-				headers[2]: email,
-				headers[3]: generate_password_hash(password),
-				headers[4]: usertype,
-				headers[5]: 'Temporary'
+				headers[0]: userCount+1,
+				headers[1]: firstname,
+				headers[2]: lastname,
+				headers[3]: email,
+				headers[4]: generate_password_hash(password),
+				headers[5]: usertype,
+				headers[6]: 'Temporary',
+				headers[7]: 0
 			})
+			session['id'] = userCount+1
+			session['FirstName'] = firstname
 			session['Email'] = email
 			session['UserType'] = usertype
 			session['Status'] = 'Temporary'
@@ -92,6 +123,9 @@ def login():
 	if request.method =='POST':
 		authenticated, reason = authenticateUser(request.form['email'], request.form['password'])
 		if authenticated:
+			if reason:
+				flash(reason)
+				return redirect(url_for('accepted'))
 			return redirect(url_for('viewPosts'))
 		else:
 			flash(reason)
@@ -105,6 +139,17 @@ def logout():
 		session.pop('UserType')
 		session.pop('Status')
 	return redirect(url_for('index'))
+
+@app.route('/accepted', methods=['GET', 'POST'])
+def accepted():
+	if session['Status'] != 'Accepted':
+		return redirect(url_for('index'))
+	print('what')
+	if request.method == 'POST':
+		print('good')
+		changeUser(session['id'], 'Status', 'Normal')
+		return redirect(url_for('viewPosts'))
+	return render_template('accepted.html')
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
@@ -202,4 +247,4 @@ def getNumPosts():
 # Run Flask web server
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
-	app.run(debug=True, host='0.0.0.0', port=port)
+	app.run(debug=True, host='0.0.0.0', port=port, threaded=True)
