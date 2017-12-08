@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12 header">
+			<h1>{% if not users %}No {% endif %}Pending Users</h1>
+		</div>
+	</div>
+</div>
+<br>
+<div class="container-fluid">
+	{% for user in users %}
+		<div class="row">
+			<div class="col-md-12">
+				<a class="btn btn-success" href="approve/{{ user['id'] }}">Approve</a>
+				<a class="btn btn-danger" onclick="createReason({{ user['id'] }})">Reject</a>
+				<div id="user{{ user['id'] }}"></div>
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							{{ user['LastName'] }}, {{user['FirstName'] }}
+						</div>
+						<div class="panel-body">
+							<ul style="list-style: none">
+								<li><strong>User Type:</strong>{{ user['UserType'] }}</li>
+								<li><strong>Email:</strong>{{ user['Email'] }}</li>
+								<li><strong>Balance:</strong>{{ user['Balance'] }}</li>
+							</ul>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+<script>
+	function createReason(divID) {
+		let form = document.createElement('div');
+		form.setAttribute('class', 'col-md-12');
+		form.innerHTML = `
+			<h3>Please include reason for rejection</h3>
+			<form name="submitrejection" action="/reject/`+String(divID)+`" method="post">
+				<div class="row">
+					<div class="form-group col-m-4">
+						<label>Reason for rejection</label>
+						<input type="text" class="form-control" placeholder="Reason" name="rejection" onchange="removeComma()" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-xs-12">
+						<button type="submit" class="btn btn-danger">Submit Rejection</button>
+					</div>
+				</div>
+			</form>
+			`;
+		let parent = document.getElementById('user'+String(divID));
+		parent.appendChild(form);
+	};
+	function removeComma() {
+		let inputs = document.getElementsByTagName('input');
+		for (let input of inputs) {
+			input.value = String(input.value).replace(',','');
+		}
+	};
+</script>
+{% endblock %}
