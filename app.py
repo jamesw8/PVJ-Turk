@@ -46,15 +46,11 @@ def authenticateUser(email, password):
 def getUserInfo(id, attributes):
 	global headers
 	retval = []
-	print(attributes)
 	with open('users.csv', 'r') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
 			if row['id'] == str(id):
-				print("hello")
 				for att in attributes:
-					print(attributes)
-					print(row[att])
 					retval.append(row[att])
 				break
 	return retval
@@ -299,12 +295,12 @@ def postBalance():
 		change = int(request.form['transactionAmount'])
 		user_data = getUserInfo(session['id'], ['Balance'])
 		print(user_data)
-		if request.form['transactionType'] == 'Withdraw':
-			if change > user_data[0]:
-				flash('Insufficient funds')
-			change *= -1
-		updateUser(session['id'], 'Balance', int(user_data[0])+change)
-		return redirect(url_for('viewPosts'))
+		if request.form['transactionType'] == 'Deposit':
+			updateUser(session['id'], 'Balance', int(user_data[0])+change)
+			return redirect(url_for('viewPosts'))
+		if change > int(user_data[0]):
+			flash('Insufficient funds')
+		change *= -1
 
 	return render_template('balance.html')
 
