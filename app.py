@@ -4,7 +4,7 @@
 # - convert inline css to external css
 # - authentication
 
-from flask import Flask, render_template, request, send_file, session, redirect, url_for
+from flask import Flask, render_template, request, send_file, session, redirect, url_for, flash
 from werkzeug import generate_password_hash, check_password_hash
 import os
 import json
@@ -23,14 +23,17 @@ def authenticateUser(email, password):
 				print('Matched email')
 				print(check_password_hash(row['Password_Hash'], password))
 				if check_password_hash(row['Password_Hash'], password):
+					if row['Status'] == 'Rejected':
+						# Need to retrieve reason for rejection
+						return False, 'This account has been rejected for the following reason:'
 					session['Email'] = row['Email']
 					session['UserType'] = row['UserType']
 					session['Status'] = row['Status']
 					print(session)
-					print('True')
-					return True
-				print('False')
-				return False
+					print(row['Email'], 'has logged in')
+					return True, ''
+				print(row['Email'], 'made a failed attempt to log in')
+				return False, 'Incorrect email/password.'
 
 def createUser(firstname, lastname, email, password, usertype):
 	try:
@@ -43,11 +46,11 @@ def createUser(firstname, lastname, email, password, usertype):
 				headers[2]: email,
 				headers[3]: generate_password_hash(password),
 				headers[4]: usertype,
-				headers[5]: 'Pending'
+				headers[5]: 'Temporary'
 			})
 			session['Email'] = email
 			session['UserType'] = usertype
-			session['Status'] = 'Pending'
+			session['Status'] = 'Temporary'
 		return True
 	except:
 		return False
@@ -73,8 +76,14 @@ def login():
 	if 'Email' in session:
 		return redirect(url_for('viewPosts'))
 	if request.method =='POST':
-		if authenticateUser(request.form['email'], request.form['password']):
+		authentication = authenticateUser(request.form['email'], request.form['password'])
+		authenticated = authentication[0]
+		reason = authentication[1]
+		if authenticated[0]:
 			return redirect(url_for('viewPosts'))
+		else:
+			flash(reason)
+
 	return render_template('login.html')
 
 @app.route('/logout', methods=['GET'])
