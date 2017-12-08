@@ -120,7 +120,7 @@ def login():
 	print(request.method,request.form)
 	if 'Email' in session:
 		return redirect(url_for('viewPosts'))
-	if request.method =='POST':
+	if request.method == 'POST':
 		authenticated, reason = authenticateUser(request.form['email'], request.form['password'])
 		if authenticated:
 			if reason:
@@ -241,9 +241,22 @@ def getSpec(sid):
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
 
-@app.route('/messaging/', methods=['GET'])
-def messaging():
-	return render_template("messaging.html")
+@app.route('/complaints/', methods=['GET'])
+def complaints():
+	allComplaints = []
+	with open("complaints.csv") as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			oneComplaint = []
+			#Check matching ID
+			if session["id"] == row["ID"]:
+				#Get all the messages with this ID
+				oneComplaint.append(row["Date"])
+				oneComplaint.append(row["Type"])
+				oneComplaint.append(row["Message"])
+			#Append one complaint to all complaints
+			allComplaints.append(oneComplaint)
+	return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
