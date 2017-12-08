@@ -17,7 +17,7 @@
 		<link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 	</head>
 	<body>
-		<nav class="navbar navbar-inverse navbar-fixed-top">	
+		<nav class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="/">PV&amp;J Turk Machine</a>
@@ -28,6 +28,7 @@
 						<li><a href="#">Logged in as {{session['FirstName']}}</a></li>
 					{% endif %}
 					<li><a href="/">Home</a></li>
+					<li><a href="/posts">Posts</a></li>
 					{% if not session['Email'] %}
 						<li><a href="/signup">Sign Up</a></li>
 						<li><a href="/login">Login</a></li>
@@ -35,7 +36,6 @@
 						{% if session['UserType'] == 'Admin' %}
 							<li><a href="/approve">Approvals</a></li>
 						{% endif %}
-						<li><a href="/posts">Posts</a></li>
 						<li><a href="/logout">Logout</a></li>
 					{% endif %}
 				</ul>
