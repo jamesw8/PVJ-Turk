@@ -260,6 +260,7 @@ def createPost():
 				'deadline': request.form['deadline'],
 				'bidDeadline': request.form['bidDeadline'],
 				'filename': specfile[0].filename,
+				'reason': '',
 				'taken': '0',
 				'submitted': False,
 				'bids': []
@@ -384,22 +385,21 @@ def acceptBid(sid, bid):
 			bids = data['bids']
 			for b in bids:
 				if b['bid'] == bid:
-					print('hi')
-					user_data = getUserInfo(session['id'], ['Balance'])
-					if b['price'] > user_data[0]:
+					b['price'] = float(b['price'])
+					user_data = float(getUserInfo(session['id'], ['Balance'])[0])
+					if b['price'] > user_data:
 						flash('Insufficient funds')
 						return redirect(url_for('viewPost', sid=sid))
 					else:
-						updateUser(session['id'], 'Balance', user_data[0]-(b['price']/2))
-						dev_data = getUserInfo(b['bidder']['id'], ['Balance'])
-						updateUser(b['bidder']['id'], ['Balance'], dev_data[0]+(9*b['price']/20))
+						updateUser(session['id'], 'Balance', user_data-(b['price']/2))
+						dev_data = float(getUserInfo(b['bidder']['id'], ['Balance'])[0])
+						updateUser(b['bidder']['id'], 'Balance', dev_data+(9*b['price'])/20)
 						updateUser(0, 'Balance', (b['price']/20))
 
 					winBid = b['price']
 					winningBid = b['bid']
 					data['taken'] = winningBid
 					data['winner'] = b['bidder']['id']
-					print('HELP ME!')
 					maxBid = int(winBid)
 					for otherBid in bids:
 						maxBid = (int(otherBid['price']) if int(otherBid['price']) > maxBid else maxBid)
