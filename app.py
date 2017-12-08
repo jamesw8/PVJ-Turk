@@ -38,6 +38,15 @@ def authenticateUser(email, password):
 def createUser(firstname, lastname, email, password, usertype):
 	try:
 		headers = ['FirstName','LastName','Email','Password_Hash','UserType','Status']
+		with open('users.csv', 'r') as csvfile:
+			reader = csv.DictReader(csvfile)
+			try:
+				for row in reader:
+					if row['Email'] == email:
+						print('Email has already been registered!')
+						raise ValueError
+			except ValueError as error:
+				raise ValueError("Email has already been registered")
 		with open('users.csv', 'a') as csvfile:
 			writer = csv.DictWriter(csvfile, headers)
 			writer.writerow({
@@ -51,9 +60,11 @@ def createUser(firstname, lastname, email, password, usertype):
 			session['Email'] = email
 			session['UserType'] = usertype
 			session['Status'] = 'Temporary'
-		return True
-	except:
-		return False
+		print(email, 'has successfully been registered.')
+		return True, ''
+	except ValueError as e:
+		print(str(e))
+		return False, str(e)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -65,9 +76,12 @@ def signup():
 	if 'Email' in session:
 		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
-	# authenticateUser(request.form['email'], request.form['password'])
-		if createUser(request.form['firstName'], request.form['lastName'], request.form['email'], request.form['password'], request.form['UserType']):
+		success, message = createUser(request.form['firstName'], request.form['lastName'], request.form['email'], request.form['password'], request.form['UserType'])
+		if success:
 			return redirect(url_for('viewPosts'))
+		else:
+			flash(message)
+			return render_template('signup.html')
 	return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -76,10 +90,8 @@ def login():
 	if 'Email' in session:
 		return redirect(url_for('viewPosts'))
 	if request.method =='POST':
-		authentication = authenticateUser(request.form['email'], request.form['password'])
-		authenticated = authentication[0]
-		reason = authentication[1]
-		if authenticated[0]:
+		authenticated, reason = authenticateUser(request.form['email'], request.form['password'])
+		if authenticated:
 			return redirect(url_for('viewPosts'))
 		else:
 			flash(reason)
