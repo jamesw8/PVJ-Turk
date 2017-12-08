@@ -217,7 +217,7 @@ def viewPosts():
 @app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
 	numPost = getNumPosts()
-
+	numBid = 0
 	if request.method == 'POST':
 		print(request.form)
 		try:
@@ -227,9 +227,11 @@ def viewPost(sid):
 				# add new bid
 				if data['bids']:
 					bids = data['bids']
+					numBid = len(data['bids'])
 				else:
 					bids = []
 				form = request.form.copy()
+				form['bid'] = numBid+1 
 				form['bidder'] = {
 					'id': session['id'],
 					'firstname': session['FirstName']
@@ -254,14 +256,33 @@ def viewPost(sid):
 	except:
 		return redirect(url_for('viewPosts'))
 
-@app.route('/view/<sid>/accept', methods=['POST'])
-def acceptBid(sid):
+@app.route('/view/<sid>/accept/<bid>', methods=['GET'])
+def acceptBid(sid, bid):
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
+		data = json.load(datafile)
+		if data['bids']:
+			bids = data['bids']
+			for b in bids:
+				if b['bid'] == bid:
+					winBid = b['price']
+					winner = b['bid']
+					data['taken'] = winner
+					# reset file for overwrite
+					datafile.seek(0)
+					datafile.truncate()
+					print('after truncate',data)
+					# write dict into json
+					json.dump(data, datafile)
+					# check if max
+					maxBid = int(winBid)
+					for b in bids:
+						maxBid = (int(b['price']) if int(b['price']) > maxBid else maxBid)
+					if maxBid > int(winBid):
+						print(maxBid, int(winBid))
+						return render_template('acceptbid.html')
 
-with open('assets/'+sid+'/data.json', 'r+') as datafile:
-	data = json.load(datafile)
-	if data['bids']:
-		bids = data['bids']
-	
+	return redirect(url_for('viewPost', sid=sid))
+
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
 	numPost = getNumPosts()
