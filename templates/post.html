@@ -4,11 +4,9 @@
 	<div class="row">
 		<div class="col-md-12 header">
 			<h1>{{ data['projectName'] }}</h1>
-      <h4>I am looking for... <strong>{{ data['devTypes'] }}</strong></h4>
-      {% if data['deadline'] %}
-      <h4> to complete the task by <strong>{{ data['deadline'] }}</strong>.</h4>
+      <h4>I am looking for... <strong>{{ data['devTypes'] }}</strong>{% if data['deadline'] %} to complete the task by <strong>{{ data['deadline'] }}</strong></h4>
       {% endif %}
-      <h4> Bidding ends <strong>{{ data['bidDeadline'] }}</strong>.</h4>
+      <h4> Bidding ends <strong>{{ data['bidDeadline'] }}</strong></h4>
       <p>{{ data['description'] }}</p>
 		</div>
 	</div>
