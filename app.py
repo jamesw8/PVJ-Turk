@@ -301,7 +301,7 @@ def complaints():
 		for row in reader:
 			oneComplaint = []
 			#Check matching ID
-			if session["id"] == row["ID"]:
+			if session["id"] == row["id"]:
 				#Get all the messages with this ID
 				oneComplaint.append(row["Date"])
 				oneComplaint.append(row["Type"])
@@ -313,15 +313,11 @@ def complaints():
 @app.route('/complaints/compose', methods=['GET','POST'])
 def composeComplaint():
 	if request.method == "POST":
-		#Skip already filled in rows
-		complaintCount = 0
-		with open("complaints.csv", "r") as csvfile:
-			complaintCount = len(list(csv.DictReader(csvfile)))
 		#Write to csv
 		with open("complaints.csv", "a") as csvfile:
-			writer = csv.DictWriter(csvfile)
+			writer = csv.DictWriter(csvfile, ["id", "Date", "Type", "Message"])
 			writer.writerow({
-				"ID": session["id"],
+				"id": session["id"],
 				"Date": request.form["date"],
 				"Type": "Sent",
 				"Message": request.form["message"]

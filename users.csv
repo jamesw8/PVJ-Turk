@@ -7,3 +7,4 @@ id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance
 6,e,e,e@e,pbkdf2:sha256:50000$Yvyekizj$3b326f6efa6eb3fcab4810832f4be5debf9f1ed7b9f81bda7f05cde0f6683ad6,Client,Temporary,0
 7,aaaa,bbbb,aaa@aaa.com,pbkdf2:sha256:50000$OItJW9PB$346286485277b8c024bad8219b5a67cb155c4fdf16ecf02831266aa1466105b4,Client,Temporary,0
 8,a,b,c@d,pbkdf2:sha256:50000$z5TBvRGE$a298787badf46d3170a8ded68c50238cc80f8b8b4ddc469c08557c48753fe13d,Developer,Temporary,0
+9,t,v,a@b,pbkdf2:sha256:50000$lGZx1RTg$8728029810347be0f31d1d6571724d29fb153af3d8e4908d107c91542c066055,Client,Temporary,0,0,0
