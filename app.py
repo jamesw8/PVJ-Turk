@@ -203,7 +203,7 @@ def rejectUser(id=None):
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
 	if not 'Email' in session:
-		return redirect(url_for('signup'))	
+		return redirect(url_for('signup'))
 	if session['UserType'] != 'Client' or session['Status'] != 'Normal':
 		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
@@ -237,18 +237,16 @@ def createPost():
 
 @app.route('/posts', methods=['GET'])
 def viewPosts():
-	if 'Email' in session:
-		projects = []
-		for d in os.listdir(assets_dir):
-			if os.path.isdir(assets_dir+d):
-				with open('assets/'+d+'/data.json', 'r') as datafile:
-					data = json.load(datafile)
-					if (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d")) \
-					and str(data['taken']) == '0':
-						projects.append(data)
-		print(projects)
-		return render_template('viewposts.html', projects=projects)
-	return redirect(url_for('login'))
+	projects = []
+	for d in os.listdir(assets_dir):
+		if os.path.isdir(assets_dir+d):
+			with open('assets/'+d+'/data.json', 'r') as datafile:
+				data = json.load(datafile)
+				if (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d")) \
+				and str(data['taken']) == '0':
+					projects.append(data)
+	print(projects)
+	return render_template('viewposts.html', projects=projects)
 
 @app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
@@ -258,7 +256,7 @@ def viewPost(sid):
 	if request.method == 'POST':
 		print(request.form)
 		if not 'Email' in session:
-			return redirect(url_for('signup'))		
+			return redirect(url_for('signup'))
 		if session['Status'] != 'Normal':
 			return redirect('viewPost', sid=sid)
 		try:
@@ -272,7 +270,7 @@ def viewPost(sid):
 				else:
 					bids = []
 				form = request.form.copy()
-				form['bid'] = numBid+1 
+				form['bid'] = numBid+1
 				form['bidder'] = {
 					'id': session['id'],
 					'firstname': session['FirstName']
@@ -414,7 +412,7 @@ def composeComplaint():
 @app.route('/rate/<sid>', methods=['POST'])
 def postRating(sid):
 	if not 'Email' in session:
-		return redirect(url_for('signup'))	
+		return redirect(url_for('signup'))
 	if session['Status'] != 'Normal':
 		return redirect('viewPost', sid=sid)
 	id_for_review = -1
@@ -436,7 +434,7 @@ def postRating(sid):
 @app.route('/balance', methods=['GET', 'POST'])
 def postBalance():
 	if not 'Email' in session:
-		return redirect(url_for('signup'))	
+		return redirect(url_for('signup'))
 	if request.method == 'POST':
 		change = int(request.form['transactionAmount'])
 		user_data = getUserInfo(session['id'], ['Balance'])
