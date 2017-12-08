@@ -9,6 +9,7 @@ from werkzeug import generate_password_hash, check_password_hash
 import os
 import json
 import csv
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'pvj-dev'
@@ -166,7 +167,9 @@ def createPost():
 				'projectName': request.form['projectName'],
 				'description': request.form['description'],
 				'deadline': request.form['deadline'],
+				'bidDeadline': request.form['bidDeadline'],
 				'filename': specfile[0].filename,
+				'taken': 0,
 				'bids': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
@@ -185,7 +188,8 @@ def viewPosts():
 			if os.path.isdir(assets_dir+d):
 				with open('assets/'+d+'/data.json', 'r') as datafile:
 					data = json.load(datafile)
-					projects.append(data)
+					if datetime.strptime(data['bidDeadline']) < datetime.strptime(datetime.date.today()):
+						projects.append(data)
 		print(projects)
 		return render_template('viewposts.html', projects=projects)
 	return redirect(url_for('login'))
@@ -239,6 +243,9 @@ def viewPost(sid):
 	except:
 		return redirect(url_for('viewPosts'))
 
+@app.route('/view/<sid>/accept')
+def acceptBid(sid):
+	pass
 
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
