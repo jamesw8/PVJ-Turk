@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12 header">
+			<h1>Welcome, {{ session['FirstName'] }}</h1>
+      <h5>Please fill out the following form for your public profile. This information will help attract future {% if session['UserType'] == 'Developer' %}clients{% else %}developers{% endif %}.</h5>
+		</div>
+	</div>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class=flashes>
+              {% for message in messages %}
+                <div class="alert alert-success">
+                {{ message }}
+              </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      <form name="accepted" action="/accepted" method="post">
+        <div class="row center-block ">
+          <div class="form-group col-m-12">
+            <label>Tell us about yourself</label>
+            <textarea class="form-control" placeholder="" name="details" required></textarea>
+          </div>
+        </div>
+        <div class="row center-block">
+           <div class="form-group">
+            <label for="Resume">Upload Resume (PDF)</label><br>
+            <label class="btn btn-default">
+              <span id="resumename">Upload File</span>
+              <input type="file" id="resume" name="resume" style="display: none;" onchange="changeText('resume')" accept=".pdf" required>
+            </label>
+          </div>
+        </div>
+        <div class="row center-block">
+          <div class="form-group">
+            <label for="Resume">Upload Profile Picture (JPEG, PNG)</label><br>
+            <label class="btn btn-default">
+              <span id="picturename">Upload Picture</span>
+              <input type="file" id="picture" name="picture" accept="image/jpg,image/png" onchange="changeText('picture')" style="display: none;" required>
+            </label>
+          </div>
+        </div>
+        <div class="row center-block">
+          <div class="form-group">
+            <label for="Interest">Interests</label>
+            <button class="btn alert-info" type="button" onclick="pushFormInput('Interest')">Add Row</button>
+            <button class="btn alert-danger" type="button" onclick="popFormInput('Interest')">Delete Row</button>
+          </div>
+          <div class="form-group" id="Interest">
+            <input type="text" class="form-control" placeholder="Interest" name="Interest-0" required>
+          </div>
+        </div>
+        {% if session['UserType'] == 'Developer' %}
+        <div class="row center-block">
+          <div class="form-group">
+            <label for="Work">Sample Work</label>
+            <button class="btn alert-info" type="button" onclick="pushFormInput('Work')">Add Work</button>
+            <button class="btn alert-danger" type="button" onclick="popFormInput('Work')">Delete Work</button>
+          </div>
+          <div class="form-group" id="Work">
+            <input type="text" class="form-control" placeholder="Work" name="Work-0" required>
+            
+          </div>
+        </div>
+        {% else %}
+        <div class="row center-block">
+          <div class="form-group">
+            <label for="Credential">Business Credentials</label>
+            <button class="btn alert-info" type="button" onclick="pushFormInput('Credential')">Add Credential</button>
+            <button class="btn alert-danger" type="button" onclick="popFormInput('Credential')">Delete Credential</button>
+          </div>
+          <div class="form-group" id="Credential">
+            <input type="text" class="form-control" placeholder="Credential" name="Credential-0" required>
+            <textarea class="form-control" placeholder="Description" name="CredentialDescription" required></textarea>
+          </div>
+        </div>
+        {% endif %}
+        <br>
+        <div class="row center-block">
+          <div class="form-group col-xs-12">
+              <button type="submit" class="btn btn-default">Submit Public Profile</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+
+  function pushFormInput(name) {
+    let formGroup = document.getElementById(name);
+    let count = formGroup.childElementCount/2;
+    if (count > 6) {
+      return;
+    }
+    let newRow = document.createElement('input');
+    newRow.setAttribute('class', 'form-control');
+    newRow.setAttribute('placeholder', name);
+    newRow.setAttribute('id', name + '-' + String(count));
+    newRow.setAttribute('name', name + '-' + String(count));
+    newRow.setAttribute('type', 'text');
+    formGroup.appendChild(newRow);
+    if (name == 'Interest') {
+      return;
+    }
+    let newDesc = document.createElement('textarea');
+    newDesc.setAttribute('class', 'form-control');
+    newDesc.setAttribute('placeholder', 'Description');
+    newDesc.setAttribute('id', name + 'Description-' + String(count));
+    newDesc.setAttribute('name', name + 'Description-' + String(count));
+    newDesc.setAttribute('type', 'text');
+
+    formGroup.appendChild(newDesc);
+  }
+
+  function popFormInput(name) {
+    let formGroup = document.getElementById(name);
+    let count = formGroup.childElementCount/2;
+    if (count <= 1) {
+      return;
+    }
+    let delRow = document.getElementById(name + '-' + String(count-1));
+    delRow.parentNode.removeChild(delRow);
+    if (name == 'Interest') {
+      return;
+    }
+    let delDesc = document.getElementById(name + 'Description-' + String(count-1));
+    delDesc.parentNode.removeChild(delDesc);
+  }
+
+  function changeText(name) {
+    let fileName = document.getElementById(name + 'name');
+    let fileInput = document.getElementById(name);
+    fileName.innerHTML = fileInput.value.substring(fileInput.value.lastIndexOf('\\')+1, fileInput.length);
+  }
+</script>
+{% endblock %}
