@@ -62,28 +62,32 @@
 </div>
   <br>
 {% for bid in data['bids'] %}
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-12">
-      <a href="{{ url_for('acceptBid', sid=data['sid'], bid=bid['bid']) }}" style="text-decoration: none; color:gray">
-        <div class="panel {% if bid['bid'] == data['taken'] %}panel-success{% else %}panel-default{% endif %}">
-          <div class="panel-heading">
-            WINNING BID ${{ bid['price'] }}
-          </div>
-          <div class="panel-body">
-            <ul class="project-list">
-              {% if bid['bidder'] %}
-                <li>Bidder: {{ bid['bidder']['firstname'] }}</li>
-              {% endif %}
-              <li>Specialties: {{ bid['devTypes'] }}</li>
-              <li>Team Size: {{ bid['teamSize'] }}</li>
-              <li>Deadline: {{ bid['proposedDeadline'] }}</li>
-            </ul>
-          </div>
+  {% if not data['taken'] or bid['bid'] == data['taken'] %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          {% if session['id'] == data['cid'] and not data['taken'] %}
+            <a href="{{ url_for('acceptBid', sid=data['sid'], bid=bid['bid']) }}" style="text-decoration: none; color:gray">
+          {% endif %}
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                ${{ bid['price'] }}
+              </div>
+              <div class="panel-body">
+                <ul class="project-list">
+                  {% if bid['bidder'] %}
+                    <li>Bidder: {{ bid['bidder']['firstname'] }}</li>
+                  {% endif %}
+                  <li>Specialties: {{ bid['devTypes'] }}</li>
+                  <li>Team Size: {{ bid['teamSize'] }}</li>
+                  <li>Deadline: {{ bid['proposedDeadline'] }}</li>
+                </ul>
+              </div>
+            </div>
+          </a>
         </div>
-      </a>
+      </div>
     </div>
-  </div>
-</div>
+  {% endif %}
 {% endfor %}
 {% endblock %}

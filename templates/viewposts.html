@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12 header">
-			<h1>Project Postings</h1>
+			<h1>{% if not projects %}No {% endif %}Project Postings</h1>
 			{% if session['UserType'] == 'Client' and session['Status'] == 'Normal' %}
 				<a class="btn btn-default" href="{{ url_for('createPost') }}">Create Project Post</a>
 			{% endif %}
@@ -12,7 +12,7 @@
 </div>
 <br>
 <div class="container">
-	{% for project in projects %}
+{% for project in projects %}
 	<div class="row">
 		<div class="col-md-11">
 			<a href="view/{{ project['sid'] }}" style="text-decoration: none; color:gray">
@@ -33,6 +33,6 @@
 			</a>
 		</div>
 	</div>
-	{% endfor %}
+{% endfor %}
 </div>
 {% endblock %}
