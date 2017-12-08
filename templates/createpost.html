@@ -35,16 +35,22 @@
 				<label for="specfile">Upload Software Specification (PDF format)</label><br>
 				<label class="btn btn-default">
 					Upload File
-					<input type="file" id="specfile" name="specfile" style="display: none;">
+					<input type="file" id="specfile" name="specfile" style="display: none;" required>
 				</label>
 			</div>
 		</div>
 		<div class="row">
 		  <div class="form-group col-m-12">
-			<label>Deadline (Optional)</label>
-			<input type="text" class="form-control" placeholder="Deadline" name="deadline">
+			<label>Deadline</label>
+			<input type="date" class="form-control" placeholder="Deadline" name="deadline" required>
 		  </div>
 		</div>
+		<div class="row">
+          <div class="form-group col-m-12">
+          	<label>Bidding Deadline</label>
+          	<input type="date" class="form-control" placeholder="Bidding Deadline" name="bidDeadline" required>
+          </div>
+        </div>
 		<br>
 		<div class="row">
 		  <div class="form-group col-xs-12">
