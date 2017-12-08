@@ -258,6 +258,12 @@ def complaints():
 			allComplaints.append(oneComplaint)
 	return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
 
+@app.route('/complaints/compose', methods=['GET','POST'])
+def composeComplaint():
+	if request.method == "POST":
+		pass
+	return render_template("composecomplaint.html")
+
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
 
