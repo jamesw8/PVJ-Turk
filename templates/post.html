@@ -37,13 +37,13 @@
         <div class="row">
           <div class="form-group col-m-4">
           <label>Price ($)</label>
-          <input type="text" class="form-control" placeholder="Price" name="price" required>
+          <input type="number" class="form-control" placeholder="Price" name="price" required>
           </div>
         </div>
         <div class="row">
           <div class="form-group col-m-4">
           <label>Proposed Deadline</label>
-          <input type="text" class="form-control" placeholder="Proposed Deadline" name="proposedDeadline" required>
+          <input type="date" class="form-control" placeholder="Proposed Deadline" name="proposedDeadline" required>
           </div>
         </div>
         <div class="row">
@@ -52,27 +52,33 @@
           </div>
         </div>
       </form>
-      {% for bid in data['bids'] %}
-      <div class="row">
-        <div class="col-md-11">
-          <!-- <a href="view/{{ data['sid'] }}" style="text-decoration: none; color:gray"> -->
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                ${{ bid['price'] }}
-              </div>
-              <div class="panel-body">
-                <ul>
-                  <li>Specialties: {{ bid['devTypes'] }}</li>
-                  <li>Team Size: {{ bid['teamSize'] }}</li>
-                  <li>Deadline: {{ bid['proposedDeadline'] }}</li>
-                </ul>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
-      {% endfor %}
     </div>
   </div>
 </div>
+  <br>
+{% for bid in data['bids'] %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <!-- <a href="view/{{ data['sid'] }}" style="text-decoration: none; color:gray"> -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            ${{ bid['price'] }}
+          </div>
+          <div class="panel-body">
+            <ul class="project-list">
+              {% if bid['bidder'] %}
+                <li>Bidder: {{ bid['bidder']['firstname'] }}</li>
+              {% endif %}
+              <li>Specialties: {{ bid['devTypes'] }}</li>
+              <li>Team Size: {{ bid['teamSize'] }}</li>
+              <li>Deadline: {{ bid['proposedDeadline'] }}</li>
+            </ul>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

@@ -18,11 +18,11 @@
 						{{ project['projectName'] }}
 					</div>
 					<div class="panel-body">
-						<ul>
-							<li>Description: {{ project['description'] }}</li>
-							<li>Looking for: {{ project['devTypes'] }}</li>
+						<ul class="project-list">
+							<li><strong>Description:</strong> {{ project['description'] }}</li>
+							<li><strong>Looking for:</strong> {{ project['devTypes'] }}</li>
 							{% if project['deadline'] %}
-							<li>Deadline: {{ project['deadline'] }}</li>
+							<li><strong>Deadline:</strong> {{ project['deadline'] }}</li>
 							{% endif %}
 						</ul>
 					</div>
