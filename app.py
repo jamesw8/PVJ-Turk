@@ -154,14 +154,19 @@ def accepted():
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
+	if session['UserType'] != 'Client' or session['Status'] != 'Normal':
+		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
 		print(request.files.getlist('specfile'))
 		specfile = request.files.getlist('specfile')
 		# assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 		numPost = str(getNumPosts() + 1)
+		while os.path.exists(assets_dir + str(numPost)):
+			numPost = str(int(numPost) + 1)
 		if not os.path.exists(assets_dir + str(numPost)):
 			os.mkdir(assets_dir + numPost)
 			data = {
+				'cid': session['id'],
 				'sid': numPost,
 				'devTypes': request.form['devTypes'],
 				'projectName': request.form['projectName'],
