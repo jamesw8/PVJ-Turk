@@ -9,13 +9,14 @@ from werkzeug import generate_password_hash, check_password_hash
 import os
 import json
 import csv
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'pvj-dev'
 
 assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 
-headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance']
+headers = ['id','FirstName','LastName','Email','Password_Hash','UserType','Status','Balance', 'Rating', 'Rating_Count']
 
 def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
@@ -42,7 +43,19 @@ def authenticateUser(email, password):
 				print(row['Email'], 'made a failed attempt to log in')
 				return False, 'Incorrect email/password.'
 
-def changeUser(id, column, newValue):
+def getUserInfo(id, attributes):
+	global headers
+	retval = []
+	with open('users.csv', 'r') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['id'] == str(id):
+				for att in attributes:
+					retval.append(row[att])
+				break
+	return retval
+
+def updateUser(id, column, newValue):
 	global headers
 	rows = []
 	with open('users.csv', 'r') as csvfile:
@@ -84,7 +97,9 @@ def createUser(firstname, lastname, email, password, usertype):
 				headers[4]: generate_password_hash(password),
 				headers[5]: usertype,
 				headers[6]: 'Temporary',
-				headers[7]: 0
+				headers[7]: 0,
+				headers[8]: 0,
+				headers[9]: 0
 			})
 			session['id'] = userCount+1
 			session['FirstName'] = firstname
@@ -147,26 +162,33 @@ def accepted():
 	print('what')
 	if request.method == 'POST':
 		print('good')
-		changeUser(session['id'], 'Status', 'Normal')
+		updateUser(session['id'], 'Status', 'Normal')
 		return redirect(url_for('viewPosts'))
 	return render_template('accepted.html')
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
+	if session['UserType'] != 'Client' or session['Status'] != 'Normal':
+		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
 		print(request.files.getlist('specfile'))
 		specfile = request.files.getlist('specfile')
 		# assets_dir = os.path.dirname(os.path.realpath(__file__)) + '/assets/'
 		numPost = str(getNumPosts() + 1)
+		while os.path.exists(assets_dir + str(numPost)):
+			numPost = str(int(numPost) + 1)
 		if not os.path.exists(assets_dir + str(numPost)):
 			os.mkdir(assets_dir + numPost)
 			data = {
+				'cid': session['id'],
 				'sid': numPost,
 				'devTypes': request.form['devTypes'],
 				'projectName': request.form['projectName'],
 				'description': request.form['description'],
 				'deadline': request.form['deadline'],
+				'bidDeadline': request.form['bidDeadline'],
 				'filename': specfile[0].filename,
+				'taken': 0,
 				'bids': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
@@ -185,54 +207,84 @@ def viewPosts():
 			if os.path.isdir(assets_dir+d):
 				with open('assets/'+d+'/data.json', 'r') as datafile:
 					data = json.load(datafile)
-					projects.append(data)
+					if (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d")) \
+					and str(data['taken']) == '0':
+						projects.append(data)
 		print(projects)
 		return render_template('viewposts.html', projects=projects)
 	return redirect(url_for('login'))
 
 @app.route('/view/<sid>', methods=['GET', 'POST'])
 def viewPost(sid):
-	# Handle database lookups here
-	# projectName = "Simplified Turk Machine"
-	# projectDescription = "We want to create a Turk System for developers"
-	# lookingFor = "Web Developer, Database Engineer"
-	
-	# redirect if doesn't exist
 	numPost = getNumPosts()
-	if int(sid) > getNumPosts():
-		return redirect('/posts')
-
+	numBid = 0
 	if request.method == 'POST':
 		print(request.form)
-		with open('assets/'+sid+'/data.json', 'r+') as datafile:
-			# load json into dict
-			data = json.load(datafile)
-			# add new bid
-			if data['bids']:
-				bids = data['bids']
-			else:
-				bids = []
-			bids.append(request.form)
-			data['bids'] = bids
-			# reset file for overwrite
-			datafile.seek(0)
-			datafile.truncate()
-			print('after truncate',data)
-			# write dict into json
-			json.dump(data, datafile)
+		try:
+			with open('assets/'+sid+'/data.json', 'r+') as datafile:
+				# load json into dict
+				data = json.load(datafile)
+				# add new bid
+				if data['bids']:
+					bids = data['bids']
+					numBid = len(data['bids'])
+				else:
+					bids = []
+				form = request.form.copy()
+				form['bid'] = numBid+1 
+				form['bidder'] = {
+					'id': session['id'],
+					'firstname': session['FirstName']
+				}
+				bids.append(form)
+				data['bids'] = bids
+				# reset file for overwrite
+				datafile.seek(0)
+				datafile.truncate()
+				print('after truncate',data)
+				# write dict into json
+				json.dump(data, datafile)
+		except:
+			return redirect(url_for('viewPosts'))
 
-	# render template from data
+
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 			data = json.load(datafile)
-			print(data)
-			return render_template('post.html',  
+			print(session['id'], 'vs', data['cid'])
+			return render_template('post.html',
 				data=data)
 
+	return redirect(url_for('viewPosts'))
+
+@app.route('/view/<sid>/accept/<bid>', methods=['GET'])
+def acceptBid(sid, bid):
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
+		data = json.load(datafile)
+		if data['bids']:
+			bids = data['bids']
+			for b in bids:
+				if b['bid'] == bid:
+					winBid = b['price']
+					winner = b['bid']
+					data['taken'] = winner
+					# reset file for overwrite
+					datafile.seek(0)
+					datafile.truncate()
+					print('after truncate',data)
+					# write dict into json
+					json.dump(data, datafile)
+					# check if max
+					maxBid = int(winBid)
+					for b in bids:
+						maxBid = (int(b['price']) if int(b['price']) > maxBid else maxBid)
+					if maxBid > int(winBid):
+						print(maxBid, int(winBid))
+						return render_template('acceptbid.html')
+
+	return redirect(url_for('viewPost', sid=sid))
 
 @app.route('/get_spec/<sid>', methods=['GET'])
 def getSpec(sid):
-	# handle looking up id
-	# replace later to demo
 	numPost = getNumPosts()
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
@@ -276,6 +328,40 @@ def composeComplaint():
 				})
 		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
+
+@app.route('/rate/<sid>', methods=['POST'])
+def postRating(sid):
+	id_for_review = -1
+	with open('assets/'+sid+'/data.json', 'r') as datafile:
+		data = json.load(datafile)
+		form = request.form.copy()
+		if form['taken'] == session['id']:
+			id_for_review = form['cid']
+		else:
+			id_for_review = form['taken']
+	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
+	total_score = user_data[0]*user_data[1]
+	total_score += request.form['Rating']
+	new_rating = total_score/user_data[1]
+	updateUser(id_for_review, 'Rating', new_rating)
+	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
+	return redirect(url_for('index'))
+
+@app.route('/balance', methods=['GET', 'POST'])
+def postBalance():
+	if request.method == 'POST':
+		change = int(request.form['transactionAmount'])
+		user_data = getUserInfo(session['id'], ['Balance'])
+		print(user_data)
+		if request.form['transactionType'] == 'Deposit':
+			updateUser(session['id'], 'Balance', int(user_data[0])+change)
+			return redirect(url_for('viewPosts'))
+		if change > int(user_data[0]):
+			flash('Insufficient funds')
+		change *= -1
+
+	return render_template('balance.html')
+
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
