@@ -43,7 +43,8 @@ def createSuperUser():
 					headers[4]: generate_password_hash('SUPER'),
 					headers[5]: 'Admin',
 					headers[6]: 'Normal',
-					headers[7]: 0,
+					# change later
+					headers[7]: 100000000,
 					headers[8]: 0,
 					headers[9]: 0
 				})
@@ -131,7 +132,7 @@ def createUser(firstname, lastname, email, password, usertype):
 				headers[4]: generate_password_hash(password),
 				headers[5]: usertype,
 				headers[6]: 'Temporary',
-				headers[7]: 0,
+				headers[7]: 100000000,
 				headers[8]: 0,
 				headers[9]: 0
 			})
@@ -197,6 +198,7 @@ def accepted():
 	if request.method == 'POST':
 		print('good')
 		updateUser(session['id'], 'Status', 'Normal')
+		session['Status'] = 'Normal'
 		return redirect(url_for('viewPosts'))
 	return render_template('accepted.html')
 
@@ -258,7 +260,7 @@ def createPost():
 				'deadline': request.form['deadline'],
 				'bidDeadline': request.form['bidDeadline'],
 				'filename': specfile[0].filename,
-				'taken': 0,
+				'taken': '0',
 				'submitted': False,
 				'bids': []
 			}
@@ -305,7 +307,7 @@ def viewPost(sid):
 				else:
 					bids = []
 				form = request.form.copy()
-				form['bid'] = numBid+1
+				form['bid'] = str(numBid+1)
 				form['bidder'] = {
 					'id': session['id'],
 					'firstname': session['FirstName']
@@ -325,8 +327,11 @@ def viewPost(sid):
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
 		data['cemail'] = getUserInfo(data['cid'], ['Email'])[0]
-		if data['taken'] != '0':
-			data['bemail'] = getUserInfo(data['taken'], ['Email'])[0]
+		try:
+			if data['taken'] != '0':
+				data['bemail'] = getUserInfo(data['taken'], ['Email'])[0]
+		except:
+			pass
 		data['active'] = (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d"))
 		return render_template('post.html',
 			data=data)
@@ -379,7 +384,7 @@ def acceptBid(sid, bid):
 			bids = data['bids']
 			for b in bids:
 				if b['bid'] == bid:
-
+					print('hi')
 					user_data = getUserInfo(session['id'], ['Balance'])
 					if b['price'] > user_data[0]:
 						flash('Insufficient funds')
@@ -394,7 +399,7 @@ def acceptBid(sid, bid):
 					winningBid = b['bid']
 					data['taken'] = winningBid
 					data['winner'] = b['bidder']['id']
-
+					print('HELP ME!')
 					maxBid = int(winBid)
 					for otherBid in bids:
 						maxBid = (int(otherBid['price']) if int(otherBid['price']) > maxBid else maxBid)
@@ -429,6 +434,10 @@ def getSpec(sid):
 		fileIndex = os.listdir(assets_dir+sid).index(filename)
 		print(fileIndex, os.listdir(assets_dir+sid)[fileIndex])
 		return send_file('assets/'+sid+'/'+os.listdir(assets_dir+sid)[fileIndex], attachment_filename='spec.pdf')
+
+@app.route('/user', methods=['GET'])
+def viewUser():
+	return render_template('user.html')
 
 @app.route('/statistics', methods=['GET'])
 def getStatistics():
