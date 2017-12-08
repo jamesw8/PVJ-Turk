@@ -168,6 +168,8 @@ def accepted():
 
 @app.route('/create', methods=['GET', 'POST'])
 def createPost():
+	if not 'Email' in session:
+		return redirect(url_for('signup'))	
 	if session['UserType'] != 'Client' or session['Status'] != 'Normal':
 		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
@@ -218,8 +220,13 @@ def viewPosts():
 def viewPost(sid):
 	numPost = getNumPosts()
 	numBid = 0
+
 	if request.method == 'POST':
 		print(request.form)
+		if not 'Email' in session:
+			return redirect(url_for('signup'))		
+		if session['Status'] != 'Normal':
+			return redirect('viewPost', sid=sid)
 		try:
 			with open('assets/'+sid+'/data.json', 'r+') as datafile:
 				# load json into dict
@@ -249,17 +256,52 @@ def viewPost(sid):
 
 
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
-			data = json.load(datafile)
-			print(session['id'], 'vs', data['cid'])
-			return render_template('post.html',
-				data=data)
+		data = json.load(datafile)
+		data['cemail'] = getUserInfo(data['cid'], ['Email'])[0]
+		if data['taken'] != '0':
+			data['bemail'] = getUserInfo(data['taken'], ['Email'])[0]
+		data['active'] = (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d"))
+		return render_template('post.html',
+			data=data)
 
 	return redirect(url_for('viewPosts'))
 
-@app.route('/view/<sid>/accept/<bid>', methods=['GET'])
-def acceptBid(sid, bid):
+@app.route('/views/<sid>/submit', methods=['POST'])
+def submitProject(sid):
+	if not 'Email' in session:
+		return redirect(url_for('signup'))
+	if session['Status'] != 'Normal':
+		return redirect('viewPost', sid=sid)
+	return redirect(url_for('viewPost', sid=sid))
+
+@app.route('/view/<sid>/reason', methods=['POST'])
+def submitReason(sid):
+	if not 'Email' in session:
+		return redirect(url_for('signup'))
+	if session['Status'] != 'Normal':
+		return redirect('viewPost', sid=sid)
 	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		data = json.load(datafile)
+		if data['taken'] != '0':
+			data['reason'] = request.form['reason']
+			# reset file for overwrite
+			datafile.seek(0)
+			datafile.truncate()
+			print('after truncate',data)
+			# write dict into json
+			json.dump(data, datafile)
+	return redirect(url_for('viewPost', sid=sid))
+
+@app.route('/view/<sid>/accept/<bid>', methods=['GET'])
+def acceptBid(sid, bid):
+	if not 'Email' in session:
+		return redirect(url_for('signup'))
+	if session['Status'] != 'Normal':
+		return redirect('viewPost', sid=sid)
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
+		data = json.load(datafile)
+		if data['taken'] != '0':
+			return redirect(url_for('viewPost', sid=sid))
 		if data['bids']:
 			bids = data['bids']
 			for b in bids:
@@ -267,19 +309,29 @@ def acceptBid(sid, bid):
 					winBid = b['price']
 					winner = b['bid']
 					data['taken'] = winner
-					# reset file for overwrite
-					datafile.seek(0)
-					datafile.truncate()
-					print('after truncate',data)
-					# write dict into json
-					json.dump(data, datafile)
-					# check if max
+
 					maxBid = int(winBid)
 					for b in bids:
 						maxBid = (int(b['price']) if int(b['price']) > maxBid else maxBid)
 					if maxBid > int(winBid):
 						print(maxBid, int(winBid))
-						return render_template('acceptbid.html')
+						# reset file for overwrite
+						datafile.seek(0)
+						datafile.truncate()
+						print('after truncate',data)
+						# write dict into json
+						json.dump(data, datafile)
+						# check if max
+						return redirect(url_for('viewPost', sid=sid))
+					else:
+						data['reason'] = 'None'
+						# reset file for overwrite
+						datafile.seek(0)
+						datafile.truncate()
+						print('after truncate',data)
+						# write dict into json
+						json.dump(data, datafile)
+						# check if max
 
 	return redirect(url_for('viewPost', sid=sid))
 
@@ -295,6 +347,10 @@ def getSpec(sid):
 
 @app.route('/rate/<sid>', methods=['POST'])
 def postRating(sid):
+	if not 'Email' in session:
+		return redirect(url_for('signup'))	
+	if session['Status'] != 'Normal':
+		return redirect('viewPost', sid=sid)
 	id_for_review = -1
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
@@ -313,6 +369,8 @@ def postRating(sid):
 
 @app.route('/balance', methods=['GET', 'POST'])
 def postBalance():
+	if not 'Email' in session:
+		return redirect(url_for('signup'))	
 	if request.method == 'POST':
 		change = int(request.form['transactionAmount'])
 		user_data = getUserInfo(session['id'], ['Balance'])
