@@ -247,14 +247,14 @@ def viewPost(sid):
 		except:
 			return redirect(url_for('viewPosts'))
 
-	try:
-		with open('assets/'+sid+'/data.json', 'r') as datafile:
+
+	with open('assets/'+sid+'/data.json', 'r') as datafile:
 			data = json.load(datafile)
-			print(data)
+			print(session['id'], 'vs', data['cid'])
 			return render_template('post.html',
 				data=data)
-	except:
-		return redirect(url_for('viewPosts'))
+
+	return redirect(url_for('viewPosts'))
 
 @app.route('/view/<sid>/accept/<bid>', methods=['GET'])
 def acceptBid(sid, bid):
