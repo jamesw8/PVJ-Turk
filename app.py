@@ -199,39 +199,45 @@ def viewPost(sid):
 	
 	# redirect if doesn't exist
 	numPost = getNumPosts()
-	if int(sid) > getNumPosts():
-		return redirect('/posts')
+	# if int(sid) > getNumPosts():
+	# 	return redirect('/posts')
 
 	if request.method == 'POST':
 		print(request.form)
-		with open('assets/'+sid+'/data.json', 'r+') as datafile:
-			# load json into dict
-			data = json.load(datafile)
-			# add new bid
-			if data['bids']:
-				bids = data['bids']
-			else:
-				bids = []
-			form = request.form.copy()
-			form['bidder'] = {
-				'id': session['id'],
-				'firstname': session['FirstName']
-			}
-			bids.append(form)
-			data['bids'] = bids
-			# reset file for overwrite
-			datafile.seek(0)
-			datafile.truncate()
-			print('after truncate',data)
-			# write dict into json
-			json.dump(data, datafile)
+		try:
+			with open('assets/'+sid+'/data.json', 'r+') as datafile:
+				# load json into dict
+				data = json.load(datafile)
+				# add new bid
+				if data['bids']:
+					bids = data['bids']
+				else:
+					bids = []
+				form = request.form.copy()
+				form['bidder'] = {
+					'id': session['id'],
+					'firstname': session['FirstName']
+				}
+				bids.append(form)
+				data['bids'] = bids
+				# reset file for overwrite
+				datafile.seek(0)
+				datafile.truncate()
+				print('after truncate',data)
+				# write dict into json
+				json.dump(data, datafile)
+		except:
+			return redirect(url_for('viewPosts'))
 
-	# render template from data
-	with open('assets/'+sid+'/data.json', 'r') as datafile:
+	try:
+		# render template from data
+		with open('assets/'+sid+'/data.json', 'r') as datafile:
 			data = json.load(datafile)
 			print(data)
 			return render_template('post.html',  
 				data=data)
+	except:
+		return redirect(url_for('viewPosts'))
 
 
 @app.route('/get_spec/<sid>', methods=['GET'])
