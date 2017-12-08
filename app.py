@@ -46,11 +46,15 @@ def authenticateUser(email, password):
 def getUserInfo(id, attributes):
 	global headers
 	retval = []
+	print(attributes)
 	with open('users.csv', 'r') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
 			if row['id'] == str(id):
+				print("hello")
 				for att in attributes:
+					print(attributes)
+					print(row[att])
 					retval.append(row[att])
 				break
 	return retval
@@ -289,12 +293,20 @@ def postRating(sid):
 	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
 	return redirect(url_for('index'))
 
-@app.route('/balance', methods=['POST'])
+@app.route('/balance', methods=['GET', 'POST'])
 def postBalance():
-	change = request.form['amount']
-	if request.form['type'] == 'withdraw':
-		change *= -1
-	updateUser(session['id'], 'Balance', change)
+	if request.method == 'POST':
+		change = int(request.form['transactionAmount'])
+		user_data = getUserInfo(session['id'], ['Balance'])
+		print(user_data)
+		if request.form['transactionType'] == 'Withdraw':
+			if change > user_data[0]:
+				flash('Insufficient funds')
+			change *= -1
+		updateUser(session['id'], 'Balance', int(user_data[0])+change)
+		return redirect(url_for('viewPosts'))
+
+	return render_template('balance.html')
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
