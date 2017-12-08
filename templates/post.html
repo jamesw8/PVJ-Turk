@@ -17,6 +17,19 @@
 </div>
 
 <div class="container-fluid">
+  <div class="row">
+    {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class=flashes>
+              {% for message in messages %}
+                <div class="alert alert-danger">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+  </div>
   <div class="row" style="padding:0;">
     <div class="col-md-8" style="">
       <iframe align="center" src="/get_spec/{{ data['sid'] }}" width="80%" height="700px" style="display: block; margin: 0 auto; margin-top: 50px;">

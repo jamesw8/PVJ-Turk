@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12 header">
-			<h1>User Details</h1>
+			<h1>User Profile</h1>
 		</div>
 	</div>
 </div>
@@ -14,10 +14,24 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					{{ attribute[0] }}
+					{{ attribute }}
 				</div>
 				<div class="panel-body">
-					{{ attributes[1] }}
+					{{ user_details[attribute] }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+{% for attribute in userjson %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					{{ attribute }}
+				</div>
+				<div class="panel-body">
+					{{ userjson[attribute] }}
 				</div>
 			</div>
 		</div>
