@@ -22,6 +22,7 @@ def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
+			print('row')
 			if row['Email'] == email:
 				print('Matched email')
 				print(check_password_hash(row['Password_Hash'], password))
@@ -63,6 +64,8 @@ def authenticateUser(email, password):
 						return True, 'Your rating is too low and you have been banned. This is the last time you are allowed to log in! If you think this is a mistake please file a complaint to admin.'
 					else:
 						# Normal user
+						if row['UserType'] == 'Admin':
+							return True, 'ADMIN!!!'
 						return True, ''
 
 				print(row['Email'], 'made a failed attempt to log in')
@@ -75,11 +78,13 @@ def getUserInfo(id, attributes):
 	retval = []
 	with open('users.csv', 'r') as csvfile:
 		reader = csv.DictReader(csvfile)
+		print('im here now')
 		for row in reader:
+			print('inside loop dw')
+			print(row)
 			if row['id'] == str(id):
 				for att in attributes:
 					retval.append(row[att])
-				break
 	return retval
 
 def updateUser(id, column, newValue):
@@ -102,18 +107,20 @@ def createUser(firstname, lastname, email, password, usertype):
 	global headers
 	try:
 		userCount = 0
-		with open('users.csv', 'r') as csvfile:
-			userCount = len(list(csv.DictReader(csvfile)))
+		if not os.path.isfile('users.csv'):
+			writer = csv.DictWriter(open('users.csv', 'w+'), headers)
+			writer.writeheader()
 		with open('users.csv', 'r') as csvfile:
 			reader = csv.DictReader(csvfile)
-			try:
-				for row in reader:
-					print(row)
-					if row['Email'] == email:
-						print('Email has already been registered!')
-						raise ValueError
-			except ValueError as error:
-				raise ValueError("Email has already been registered")
+			print('im here now')
+			for row in reader:
+				userCount += 1
+				print('inside loop dw')
+				print(row)
+				if row['Email'] == email:
+					print('Email has already been registered!')
+					raise ValueError("Email has already been registered")
+
 		with open('users.csv', 'a') as csvfile:
 			start_status = 'Temporary'
 			if userCount == 0:
@@ -171,9 +178,10 @@ def login():
 	if request.method == 'POST':
 		authenticated, reason = authenticateUser(request.form['email'], request.form['password'])
 		if authenticated:
-			if reason:
+			if reason != '':
 				flash(reason)
-				return redirect(url_for('accepted'))
+				if reason == 'Congratulations, you have been accepted!':
+					return redirect(url_for('accepted'))
 			return redirect(url_for('viewPosts'))
 		else:
 			flash(reason)
@@ -583,6 +591,7 @@ def getUser():
 	print(session['id'])
 	user_details = getUserInfo(session['id'], headers)
 	print(user_details)
+
 	userjson = {}
 	with open('users/user.json', 'r+') as userdata:
 		userjson = json.load(userdata)
@@ -593,8 +602,6 @@ def getUser():
 		print(header)
 		thing = user_details[header]
 		user[headers[header]] = thing
-	for key in userjson['form']:
-		print(key, userjson['form'][key])
 	print(user)
 	return render_template('user.html', user_details=user, userjson=userjson['form'])
 
