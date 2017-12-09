@@ -64,8 +64,6 @@ def authenticateUser(email, password):
 						return True, 'Your rating is too low and you have been banned. This is the last time you are allowed to log in! If you think this is a mistake please file a complaint to admin.'
 					else:
 						# Normal user
-						if row['UserType'] == 'Admin':
-							return True, 'ADMIN!!!'
 						return True, ''
 
 				print(row['Email'], 'made a failed attempt to log in')
@@ -291,6 +289,20 @@ def viewPosts():
 				data = json.load(datafile)
 				if (datetime.datetime.strptime(data['bidDeadline'], "%Y-%m-%d") > datetime.datetime.strptime(str(datetime.date.today()), "%Y-%m-%d")) \
 				and str(data['taken']) == '0':
+					projects.append(data)
+	print(projects)
+	return render_template('viewposts.html', projects=projects)
+
+@app.route('/posts/my', methods=['GET'])
+def viewMyPosts():
+	projects = []
+	for d in os.listdir(assets_dir):
+		if os.path.isdir(assets_dir+d):
+			with open('assets/'+d+'/data.json', 'r') as datafile:
+				data = json.load(datafile)
+				if session['UserType'] == 'Developer' and str(data['taken']) == session['id']:
+					projects.append(data)
+				elif session['UserType'] == 'Client' and str(data['cid']) == session['id']:
 					projects.append(data)
 	print(projects)
 	return render_template('viewposts.html', projects=projects)
