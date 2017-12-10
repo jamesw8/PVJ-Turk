@@ -22,45 +22,53 @@ def authenticateUser(email, password):
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
-			print('row')
 			if row['Email'] == email:
-				print('Matched email')
+				print('Matched email: {}'.format(email))
 				print(check_password_hash(row['Password_Hash'], password))
 				if check_password_hash(row['Password_Hash'], password):
+
+					status = row['Status']
+
 					# Failed Login
+					# Rejected or banned blocking
+					if status == 'Rejected':
+						# Need to retrieve reason for rejection
+						return False, 'This account has been rejected/closed for the following reason: ' + row['Note']
 
 					# Warning or ban updating
 					if float(row['Rating']) <= 2.0:
 						if int(row['Rating_Count']) > 0:
-							if row['Status'] == 'Warning':
+							if status == 'Warning':
 								if (int(row['Last_Warning_Count']) < int(row['Rating_Count'])):
+									print('DUMB')
 									updateUser(row['id'], 'Status', 'Banned')
 									updateUser(row['id'], 'Note', 'You have been banned for bad ratings!')
+									status = 'Banned'
 							else:
 								updateUser(row['id'], 'Status', 'Warning')
 								updateUser(row['id'], 'Last_Warning_Count', row['Rating_Count'])
+								status = 'Warning'
 
-					# Rejected or banned blocking
-					if row['Status'] == 'Rejected':
-						# Need to retrieve reason for rejection
-						return False, 'This account has been rejected/closed for the following reason: ' + row['Note']
 
 					# Successful login
 					session['id'] = row['id']
 					session['FirstName'] = row['FirstName']
 					session['Email'] = row['Email']
 					session['UserType'] = row['UserType']
-					session['Status'] = row['Status']
+					session['Status'] = status
 					print(session)
 					print(row['Email'], 'has logged in')
 
 					# Logging in with messages
-					if row['Status'] == 'Accepted':
+					if session['Status'] == 'Accepted':
 						return True, 'Congratulations, you have been accepted!'
-					elif row['Status'] == 'Warning':
+					elif session['Status'] == 'Warning':
+						print('STATUS IS WARNING')
 						return True, 'Your rating is too low and you have received one warning. If you think this is a mistake please file a complaint to admin.'
-					elif row['Status'] == 'Banned':
+					elif session['Status'] == 'Banned':
+						print('STATUS is BANNED')
 						updateUser(row['id'], 'Status', 'Rejected')
+						session['Status'] = 'Rejected'
 						return True, 'Your rating is too low and you have been banned. This is the last time you are allowed to log in! If you think this is a mistake please file a complaint to admin.'
 					else:
 						# Normal user
@@ -175,7 +183,7 @@ def login():
 		if authenticated:
 			if reason != '':
 				flash(reason)
-				if reason == 'Congratulations, you have been accepted!':
+				if session['Status'] == 'Accepted':
 					return redirect(url_for('accepted'))
 			return redirect(url_for('viewPosts'))
 		else:
@@ -262,13 +270,14 @@ def createPost():
 				'projectName': request.form['projectName'],
 				'description': request.form['description'],
 				'deadline': request.form['deadline'],
-				'bidDeadline': request.form['bidDeadline'],
+				'bidDeadline': "{}-{}-{}".format(request.form['bidDeadlineYear'], request.form['bidDeadlineMonth'], request.form['bidDeadlineDay'] ),
 				'filename': specfile[0].filename,
 				'reason': '',
 				'taken': '0',
 				'submitted': False,
-				'': '',
-				'bids': []
+				'submission': '',
+				'bids': [],
+				'winner': 0
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
 				json.dump(data, datafile)

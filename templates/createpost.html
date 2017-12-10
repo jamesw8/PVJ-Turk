@@ -45,12 +45,41 @@
 			<input type="date" class="form-control" placeholder="Deadline" name="deadline">
 		  </div>
 		</div>
-		<div class="row">
+				<div class="row">
           <div class="form-group col-m-12">
           	<label>Bidding Deadline</label>
-          	<input type="date" class="form-control" placeholder="Bidding Deadline" name="bidDeadline" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-m-12">
+						<div style="float:left;width:30%;" name = "year">
+	             <select class="form-control col-m-3" name='bidDeadlineYear'>
+								 Year
+	               {% for i in range(2017,2019) %}
+								 		<option>{{ i }}</option>
+								 {% endfor %}
+	             </select>
+						 </div>
+						 <div style="float:left;width:30%;" name = "month">
+							 <select class="form-control col-m-3" name='bidDeadlineMonth'>
+								 Month
+	               {% for i in range(1,13) %}
+								 		<option>{{ i }}</option>
+								 {% endfor %}
+	             </select>
+						 </div>
+						 <div style="float:left;width:30%;" name = "day">
+							 <select class="form-control col-m-3" name='bidDeadlineDay'>
+								 Day
+	               {% for i in range(1,30) %}
+								 		<option>{{ i }}</option>
+								 {% endfor %}
+	             </select>
+	           </div>
+					 </div>
+				 </div>
+					 </div>
           </div>
-        </div>
 		<br>
 		<div class="row">
 		  <div class="form-group col-xs-12">
