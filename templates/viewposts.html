@@ -2,9 +2,20 @@
 {% block content %}
 <div class="container-fluid">
 	<div class="row">
+		{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<div class=flashes>
+						{% for message in messages %}
+						<div class="alert alert-danger">
+							{{ message }}
+						</div>
+						{% endfor %}
+					</div>
+				{% endif %}
+			{% endwith %}
 		<div class="col-md-12 header">
 			<h1>{% if not projects %}No {% endif %}Project Postings</h1>
-			{% if session['UserType'] == 'Client' and session['Status'] == 'Normal' %}
+			{% if session['UserType'] == 'Client' and session['Status'] in ['Normal','Warning'] %}
 				<a class="btn btn-default" href="{{ url_for('createPost') }}">Create Project Post</a>
 			{% endif %}
 		</div>

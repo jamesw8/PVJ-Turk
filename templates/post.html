@@ -38,7 +38,7 @@
       <iframe align="center" src="/get_spec/{{ data['sid'] }}" width="80%" height="700px" style="display: block; margin: 0 auto; margin-top: 50px;">
       </iframe>
     </div>
-    {% if session['Status'] == 'Normal' %}
+    {% if session['Status'] in ['Normal','Warning'] %}
       {% if not session['id'] == data['cid'] and data['taken'] == '0' and data['active'] %}
         <div class="col-md-4" style="margin-top: 50px; padding-right:50px;">
           <h3>Interested? Bid here.</h3>

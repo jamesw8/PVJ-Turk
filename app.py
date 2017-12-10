@@ -244,7 +244,7 @@ def rejectUser(id=None):
 def createPost():
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
-	if session['UserType'] != 'Client' or session['Status'] != 'Normal':
+	if session['UserType'] != 'Client' or session['Status'] not in ['Normal','Warning'] :
 		return redirect(url_for('viewPosts'))
 	if request.method == 'POST':
 		print(request.files.getlist('specfile'))
@@ -314,7 +314,7 @@ def viewPost(sid):
 		print(request.form)
 		if not 'Email' in session:
 			return redirect(url_for('signup'))
-		if session['Status'] != 'Normal':
+		if session['Status'] not in ['Normal','Warning']:
 			return redirect('viewPost', sid=sid)
 		try:
 
@@ -367,7 +367,7 @@ def redirViewPost(sid):
 def submitProject(sid):
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
-	if session['Status'] != 'Normal':
+	if session['Status'] not in ['Normal','Warning']:
 		return redirect('viewPost', sid=sid)
 	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		data = json.load(datafile)
@@ -393,7 +393,7 @@ def submitProject(sid):
 def submitReason(sid):
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
-	if session['Status'] != 'Normal':
+	if session['Status'] not in ['Normal','Warning']:
 		return redirect('viewPost', sid=sid)
 	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		data = json.load(datafile)
@@ -411,7 +411,7 @@ def submitReason(sid):
 def acceptBid(sid, bid):
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
-	if session['Status'] != 'Normal':
+	if session['Status'] not in ['Normal','Warning']:
 		return redirect('viewPost', sid=sid)
 	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		data = json.load(datafile)
@@ -480,7 +480,7 @@ def getStatistics():
 	with open('users.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
-			if row['Status'] == 'Normal':
+			if row['Status'] in ['Normal','Warning']:
 				if row['UserType'] == 'Client':
 					clients += 1
 				elif row['UserType'] == 'Developer':
@@ -571,7 +571,6 @@ def composeComplaint():
 
 @app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):
-	print('HI')
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
 
@@ -579,7 +578,6 @@ def postRating(sid):
 		id_for_review = -1
 		data = json.load(datafile)
 		form = request.form.copy()
-		print('HIG AGIN')
 		if data['winner'] == session['id']:
 			id_for_review = data['cid']
 		else:
@@ -597,7 +595,7 @@ def postRating(sid):
 		updateUser(0, 'Balance', su_data-(19*bid_amount/40))
 
 	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
-	user_data = [float(item) for item in user_data]
+	user_data = [float(user_data[0]), int(user_data[1])]
 	print(user_data)
 	total_score = user_data[0]*user_data[1]
 	total_score += float(request.form['rating'])
