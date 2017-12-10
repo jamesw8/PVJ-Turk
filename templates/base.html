@@ -25,7 +25,7 @@
 
 				<ul class="nav navbar-nav navbar-right hidden-xs">
 					{% if session['Email'] %}
-						<li><a href="/user">Logged in as {{session['FirstName']}}</a></li>
+						<li><a href="/user/{{ session['id'] }}">Logged in as {{session['FirstName']}}</a></li>
 					{% endif %}
 					<li><a href="/">Home</a></li>
 					<li><a href="/posts">Posts</a></li>
