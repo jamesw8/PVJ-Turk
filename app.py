@@ -270,6 +270,7 @@ def createPost():
 				'reason': '',
 				'taken': '0',
 				'submitted': False,
+				'submission': '',
 				'bids': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
@@ -360,7 +361,7 @@ def viewPost(sid):
 
 	return redirect(url_for('viewPosts'))
 
-@app.route('/views/<sid>/submit', methods=['POST'])
+@app.route('/view/<sid>/submit', methods=['POST'])
 def submitProject(sid):
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
@@ -368,9 +369,16 @@ def submitProject(sid):
 		return redirect('viewPost', sid=sid)
 	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		data = json.load(datafile)
-		if session['id'] == data['taken']:
+		if session['id'] == data['winner']:
 			data['submitted'] = True
+			data['submission'] = request.form['repolink']
 			# Need to update monies from client to superuser
+		# reset file for overwrite
+		datafile.seek(0)
+		datafile.truncate()
+		print('after truncate',data)
+		# write dict into json			
+		print(data)
 		json.dump(data, datafile)
 	return redirect(url_for('viewPost', sid=sid))
 
@@ -556,10 +564,10 @@ def composeComplaint():
 
 @app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):
-	# if not 'Email' in session:
-	# 	return redirect(url_for('signup'))
-	# if session['Status'] != 'Normal':
-	# 	return redirect('viewPost', sid=sid)
+	if not 'Email' in session:
+		return redirect(url_for('signup'))
+	if session['Status'] != 'Normal':
+		return redirect('viewPost', sid=sid)
 	id_for_review = -1
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
