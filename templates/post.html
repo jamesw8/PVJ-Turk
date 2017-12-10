@@ -4,6 +4,9 @@
 	<div class="row">
 		<div class="col-md-12 header">
 			<h1>{{ data['projectName'] }}</h1>
+      {% if data['submitted'] and session['id'] in [data['cid'],data['winner']] %}
+        <h2>Submission Link: <a href="{{ data['submission'] }}">{{ data['submission'] }}</a></h2>
+      {% endif %}
       <h4>I am looking for... <strong>{{ data['devTypes'] }}</strong>{% if data['deadline'] %} to complete the task by <strong>{{ data['deadline'] }}</strong></h4>
       {% endif %}
       {% if data['taken'] == '0' and data['active'] %}
