@@ -36,6 +36,8 @@
 					{% else %}
 						{% if session['UserType'] == 'Admin' %}
 							<li><a href="/approve">Approvals</a></li>
+						{% else %}
+							<li><a href="/posts/my">My Projects</a></li>
 						{% endif %}
 						<li><a href="/logout">Logout</a></li>
 					{% endif %}
