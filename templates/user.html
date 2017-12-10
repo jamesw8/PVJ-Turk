@@ -8,6 +8,18 @@
 	</div>
 </div>
 <br>
+<div>
+{% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class=flashes>
+              {% for message in messages %}
+                <div class="alert alert-success">
+                {{ message }}
+              </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
 <div class="container-fluid">
 {% for attribute in user_details %}
 	<div class="row">

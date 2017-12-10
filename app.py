@@ -532,12 +532,12 @@ def composeComplaint():
 		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
 
-@app.route('/rate/<sid>', methods=['POST'])
+@app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):
-	if not 'Email' in session:
-		return redirect(url_for('signup'))
-	if session['Status'] != 'Normal':
-		return redirect('viewPost', sid=sid)
+	# if not 'Email' in session:
+	# 	return redirect(url_for('signup'))
+	# if session['Status'] != 'Normal':
+	# 	return redirect('viewPost', sid=sid)
 	id_for_review = -1
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
@@ -575,11 +575,11 @@ def postBalance():
 
 	return render_template('balance.html')
 
-@app.route('/user', methods=['GET'])
-def getUser():
+@app.route('/user/<id>', methods=['GET'])
+def getUser(id=None):
 	global headers
 	print(session['id'])
-	user_details = getUserInfo(session['id'], headers)
+	user_details = getUserInfo(id, headers)
 	userjson = {}
 	with open('users/user.json', 'r+') as userdata:
 		userjson = json.load(userdata)
