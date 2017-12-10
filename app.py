@@ -301,11 +301,11 @@ def viewMyPosts():
 		if os.path.isdir(assets_dir+d):
 			with open('assets/'+d+'/data.json', 'r') as datafile:
 				data = json.load(datafile)
-				if session['UserType'] == 'Developer' and str(data['taken']) == session['id']:
+				print(data['taken'])
+				if session['UserType'] == 'Developer' and str(data['winner']) == session['id']:
 					projects.append(data)
 				elif session['UserType'] == 'Client' and str(data['cid']) == session['id']:
 					projects.append(data)
-	print(projects)
 	return render_template('viewposts.html', projects=projects)
 
 @app.route('/view/<sid>', methods=['GET', 'POST'])
@@ -320,6 +320,7 @@ def viewPost(sid):
 		if session['Status'] != 'Normal':
 			return redirect('viewPost', sid=sid)
 		try:
+
 			with open('assets/'+sid+'/data.json', 'r+') as datafile:
 				# load json into dict
 				data = json.load(datafile)
@@ -361,6 +362,10 @@ def viewPost(sid):
 
 	return redirect(url_for('viewPosts'))
 
+@app.route('/posts/view/<sid>', methods=['GET'])
+def redirViewPost(sid):
+	return redirect('/view/{}'.format(sid))
+
 @app.route('/view/<sid>/submit', methods=['POST'])
 def submitProject(sid):
 	if not 'Email' in session:
@@ -377,7 +382,7 @@ def submitProject(sid):
 		datafile.seek(0)
 		datafile.truncate()
 		print('after truncate',data)
-		# write dict into json			
+		# write dict into json
 		print(data)
 		json.dump(data, datafile)
 	return redirect(url_for('viewPost', sid=sid))

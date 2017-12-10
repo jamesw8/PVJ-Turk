@@ -24,6 +24,18 @@
 {% for attribute in user_details %}
 	<div class="row">
 		<div class="col-md-12">
+			{% if attribute == 'Balance' %}
+			<a href='/balance'>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						{{ attribute }}
+					</div>
+					<div class="panel-body">
+						{{ user_details[attribute] }}
+					</div>
+				</div>
+			</a>
+			{% else %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					{{ attribute }}
@@ -32,6 +44,7 @@
 					{{ user_details[attribute] }}
 				</div>
 			</div>
+			{% endif %}
 		</div>
 	</div>
 {% endfor %}
