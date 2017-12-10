@@ -76,10 +76,7 @@ def getUserInfo(id, attributes):
 	retval = []
 	with open('users.csv', 'r') as csvfile:
 		reader = csv.DictReader(csvfile)
-		print('im here now')
 		for row in reader:
-			print('inside loop dw')
-			print(row)
 			if row['id'] == str(id):
 				for att in attributes:
 					retval.append(row[att])
@@ -270,7 +267,7 @@ def createPost():
 				'reason': '',
 				'taken': '0',
 				'submitted': False,
-				'submission': '',
+				'': '',
 				'bids': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
@@ -378,6 +375,11 @@ def submitProject(sid):
 			data['submitted'] = True
 			data['submission'] = request.form['repolink']
 			# Need to update monies from client to superuser
+			client_data = float(getUserInfo(data['cid'], ['Balance'])[0])
+			su_data = float(getUserInfo(0, ['Balance'])[0])
+			bid_amount = float(data['bids'][int(data['taken'])-1]['price'])
+			updateUser(data['cid'], 'Balance', client_data-(bid_amount/2))
+			updateUser(0, 'Balance', su_data+(bid_amount/2))
 		# reset file for overwrite
 		datafile.seek(0)
 		datafile.truncate()
@@ -427,8 +429,8 @@ def acceptBid(sid, bid):
 					else:
 						updateUser(session['id'], 'Balance', user_data-(b['price']/2))
 						dev_data = float(getUserInfo(b['bidder']['id'], ['Balance'])[0])
-						updateUser(b['bidder']['id'], 'Balance', dev_data+(9*b['price'])/20)
-						updateUser(0, 'Balance', (b['price']/20))
+						updateUser(b['bidder']['id'], 'Balance', dev_data+(19*b['price'])/40)
+						updateUser(0, 'Balance', (b['price']/40))
 
 					winBid = b['price']
 					winningBid = b['bid']
@@ -569,29 +571,40 @@ def composeComplaint():
 
 @app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):
+	print('HI')
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
-	if session['Status'] != 'Normal':
-		return redirect('viewPost', sid=sid)
-	id_for_review = -1
+
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
+		id_for_review = -1
 		data = json.load(datafile)
 		form = request.form.copy()
-		if form['taken'] == session['id']:
-			id_for_review = form['cid']
+		print('HIG AGIN')
+		if data['winner'] == session['id']:
+			id_for_review = data['cid']
 		else:
-			id_for_review = form['taken']
-	if rating < 3:
+			id_for_review = data['winner']
+		print(id_for_review)
+	if int(form['rating']) < 3:
 		if request.form['Description'] == '':
 			flash('Please submit reason for this rating')
 			return redirect(url_for('viewPost', sid=sid))
+	elif session['id'] == data['cid']:
+		dev_data = float(getUserInfo(session['id'], ['Balance'])[0])
+		su_data = float(getUserInfo(0, ['Balance'])[0])
+		bid_amount = float(data['bids'][int(data['taken'])-1]['price'])
+		updateUser(data['winner'], 'Balance', dev_data+(19*bid_amount/40))
+		updateUser(0, 'Balance', su_data-(19*bid_amount/40))
+
 	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
+	user_data = [float(item) for item in user_data]
+	print(user_data)
 	total_score = user_data[0]*user_data[1]
-	total_score += request.form['Rating']
-	new_rating = total_score/user_data[1]
+	total_score += float(request.form['rating'])
+	new_rating = total_score/(user_data[1]+1)
 	updateUser(id_for_review, 'Rating', new_rating)
 	updateUser(id_for_review, 'Rating_Count', user_data[1]+1)
-	return redirect(url_for('index'))
+	return redirect(url_for('viewPost', sid=sid))
 
 @app.route('/balance', methods=['GET', 'POST'])
 def postBalance():
