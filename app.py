@@ -202,8 +202,9 @@ def accepted():
 		print('good')
 		updateUser(session['id'], 'Status', 'Normal')
 		data = {}
-		with open('users/user.json', 'w') as userdata:
-			# data = json.load(userdata)
+		if not os.path.exists('users/'+session['id']):
+			os.mkdir('users/'+session['id'])
+		with open('users/'+session['id']+'/user.json', 'w+') as userdata:
 			data['form'] = request.form
 			json.dump(data, userdata)
 		session['Status'] = 'Normal'
@@ -294,17 +295,20 @@ def viewPosts():
 	print(projects)
 	return render_template('viewposts.html', projects=projects)
 
-@app.route('/posts/my', methods=['GET'])
-def viewMyPosts():
+@app.route('/posts/<userID>', methods=['GET'])
+def viewMyPosts(userID=None):
 	projects = []
+	user_details = getUserInfo(userID, headers)
+	if not user_details:
+		return redirect(request.referrer or url_for('viewPosts'))
 	for d in os.listdir(assets_dir):
 		if os.path.isdir(assets_dir+d):
 			with open('assets/'+d+'/data.json', 'r') as datafile:
 				data = json.load(datafile)
 				print(data['taken'])
-				if session['UserType'] == 'Developer' and str(data['winner']) == session['id']:
+				if session['UserType'] == 'Developer' and str(data['winner']) == userID:
 					projects.append(data)
-				elif session['UserType'] == 'Client' and str(data['cid']) == session['id']:
+				elif session['UserType'] == 'Client' and str(data['cid']) == userID:
 					projects.append(data)
 	return render_template('viewposts.html', projects=projects)
 
@@ -687,18 +691,27 @@ def getUser(id=None):
 	global headers
 	print(session['id'])
 	user_details = getUserInfo(id, headers)
+	if not user_details:
+		return redirect(request.referrer or url_for('index'))
 	userjson = {}
-	with open('users/user.json', 'r+') as userdata:
-		userjson = json.load(userdata)
+	try:
+		with open('users/'+id+'/user.json', 'r+') as userdata:
+			userjson = json.load(userdata)
+	except:
+		pass
+
 	user = {}
 	for header in range(len(headers)):
-		if headers[header] in ['Password_Hash', 'id']:
+		if headers[header] in ['Password_Hash']:
 			continue
 		print(header)
 		thing = user_details[header]
 		user[headers[header]] = thing
 	print(user)
-	return render_template('user.html', user_details=user, userjson=userjson['form'])
+	if 'form' in userjson:
+		return render_template('user.html', user_details=user, userjson=userjson['form'])
+	else:
+		return render_template('user.html', user_details=user, userjson=None)
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))

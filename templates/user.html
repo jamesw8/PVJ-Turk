@@ -3,7 +3,8 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12 header">
-			<h1>User Profile</h1>
+			<h1>{{ user_details['FirstName'] }} {{ user_details['LastName'] }}</h1>
+			<a class="btn btn-default" href="{{ url_for('viewMyPosts', userID=user_details['id']) }}">View Projects</a>
 		</div>
 	</div>
 </div>
@@ -48,19 +49,21 @@
 		</div>
 	</div>
 {% endfor %}
-{% for attribute in userjson %}
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					{{ attribute }}
-				</div>
-				<div class="panel-body">
-					{{ userjson[attribute] }}
+{% if userjson %}
+	{% for attribute in userjson %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						{{ attribute }}
+					</div>
+					<div class="panel-body">
+						{{ userjson[attribute] }}
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-{% endfor %}
+	{% endfor %}
+{% endif %}
 </div>
 {% endblock %}
