@@ -1,1 +1,45 @@
-{"cid": "1", "sid": "2", "devTypes": "Deep Learning System", "projectName": "Instance Segmentation for Self Driving Car", "description": "Use deep convolutional networks for instance segmentation for my autonomous cars", "deadline": "", "bidDeadline": "2018-6-1", "filename": "Sample Report 1.pdf", "taken": "0", "submitted": false, "submission": "", "bids": [{"devTypes": "Machine Learning", "teamSize": "5", "price": "5000", "proposedDeadlineYear": "2018", "proposedDeadlineMonth": "9", "proposedDeadlineDay": "1", "bid": "1", "bidder": {"id": "3", "firstname": "Developer"}, "proposedDeadline": "2018-9-1"}, {"devTypes": "Machine learning", "teamSize": "5", "price": "10000", "proposedDeadlineYear": "2018", "proposedDeadlineMonth": "11", "proposedDeadlineDay": "1", "bid": "2", "bidder": {"id": "3", "firstname": "Developer"}, "proposedDeadline": "2018-11-1"}], "winner": 0, "ratings": []}
+{
+    "cid": "1",
+    "sid": "2",
+    "devTypes": "Deep Learning System",
+    "projectName": "Instance Segmentation for Self Driving Car",
+    "description": "Use deep convolutional networks for instance segmentation for my autonomous cars",
+    "deadline": "",
+    "bidDeadline": "2018-6-1",
+    "filename": "Sample Report 1.pdf",
+    "taken": "1",
+    "submitted": false,
+    "submission": "",
+    "bids": [
+        {
+            "devTypes": "Machine Learning",
+            "teamSize": "5",
+            "price": "5000",
+            "proposedDeadlineYear": "2018",
+            "proposedDeadlineMonth": "9",
+            "proposedDeadlineDay": "1",
+            "bid": "1",
+            "bidder": {
+                "id": "3",
+                "firstname": "Developer"
+            },
+            "proposedDeadline": "2018-9-1"
+        },
+        {
+            "devTypes": "Machine learning",
+            "teamSize": "5",
+            "price": "10000",
+            "proposedDeadlineYear": "2018",
+            "proposedDeadlineMonth": "11",
+            "proposedDeadlineDay": "1",
+            "bid": "2",
+            "bidder": {
+                "id": "3",
+                "firstname": "Developer"
+            },
+            "proposedDeadline": "2018-11-1"
+        }
+    ],
+    "winner": "3",
+    "ratings": []
+}
