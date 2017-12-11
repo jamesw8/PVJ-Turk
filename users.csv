@@ -1,16 +1,8 @@
 id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance,Rating,Rating_Count,Last_Warning_Count,Note
-1,q,q,q@aq,pbkdf2:sha256:50000$Q2pVijGp$ec703787ad261013d29eda470a442adbb0b737fd805b2dbdb1454a54d6da13a2,Client,Rejected,100000000,,,,eqw
-2,a,a,a@a,pbkdf2:sha256:50000$jSSNjCP1$21d2afa7cbb9858005c099b69a7b791fd714f4679b2abf3d85561b6560989dda,Client,Rejected,0,,,,nonono
-3,b,b,b@b,pbkdf2:sha256:50000$SAZEEUkV$a25209d2f6942b90c65d14ad185c0698a1ae7e2e683fc46fa8b782081435cc68,Client,Rejected,0,,,,
-4,c,c,c@c,pbkdf2:sha256:50000$ParCKjXr$558f1182f9cd85318e85cb7cb4ff8284d55585abc3e9f682cb7518648de03310,Developer,Normal,100007245.0,0,0,0,0,No notes at this time.
-5,d,d,d@d,pbkdf2:sha256:50000$zm8vDNTY$9b42391923daf53ebe293ae774da2110397af87ab61091d97be6687f666bf7b6,Client,Normal,99962850.0,0,0,,No notes at this time.
-6,e,e,e@e,pbkdf2:sha256:50000$Yvyekizj$3b326f6efa6eb3fcab4810832f4be5debf9f1ed7b9f81bda7f05cde0f6683ad6,Client,Rejected,0,,,,Ok... Not great though
-7,aaaa,bbbb,aaa@aaa.com,pbkdf2:sha256:50000$OItJW9PB$346286485277b8c024bad8219b5a67cb155c4fdf16ecf02831266aa1466105b4,Client,Rejected,0,,,,qeq wq qeq
-8,a,b,c@d,pbkdf2:sha256:50000$z5TBvRGE$a298787badf46d3170a8ded68c50238cc80f8b8b4ddc469c08557c48753fe13d,Developer,Normal,0,,,,This won't break
-9,t,v,a@b,pbkdf2:sha256:50000$lGZx1RTg$8728029810347be0f31d1d6571724d29fb153af3d8e4908d107c91542c066055,Client,Temporary,0,0,,,0
-10,Admin,Root,admin@admin,pbkdf2:sha256:50000$lJS3VDfB$d939209a35ab640b2278c44a1134e70383c2f6c46ec9ad964a05417af5bb0003,Admin,Accepted,0,0,,,0
-11,p,t,pt@pt,pbkdf2:sha256:50000$zTzufV8l$baa7dcf564be167c04c77630f756e0412068da308bc1405f3ab8c79639abdd1c,Client,Temporary,100000000,0,0,,
-12,James,Wong,james@wong,pbkdf2:sha256:50000$ybuYqJMa$d94dfd4d0128ed70790e6de0881311390c485d27aa3d5fac9efdbfe0e3a90260,Developer,Rejected,100000000,0,0,,Needs new name
-13,James,Wong,james@james,pbkdf2:sha256:50000$U4sosPUC$03488ea7cc71d42f1edfec1fa242abe28d14b34ee5ec7fe7eb5f4515fb2c3284,Developer,Normal,100001350.0,1,1	,,
-13,f,f,f@f,pbkdf2:sha256:50000$I6PWXREo$fff11d15241737dd9704fba1f0a477bb9ceef998724a9b0cc7b0314ed78f76ff,Developer,Normal,0,0,0,0,0,No notes at this time.14,c,d,q@w,pbkdf2:sha256:50000$R6sRPgsx$68aa655141ebbcf133e13b496b369d367016564d5ac14cc05cd775fd670b2198,Client,Temporary,0,0,0,0,No notes at this time.
-14,a,a,q@w,pbkdf2:sha256:50000$dx9M1V2F$6136db73997f3be88a32d57825f337562c0affb7edb0fbe056d9e9e97ce10a67,Client,Temporary,0,0,0,0,No notes at this time.
+0,admin,admin,admin,pbkdf2:sha256:50000$iwJpcPse$74d68bc7815c31bc4c3eb83f96914cbe1f1182805a1e9ba15452cbf147cb6c61,Admin,Normal,1050.0,0,0,0,No notes at this time.
+1,Client,Vincent,Client,pbkdf2:sha256:50000$JaJS1uUz$cecba966327a188fcb04ead719733f1e2a25fc5e1dfca8690ee26d12bcd99a6f,Client,Normal,0,0,0,0,No notes at this time.
+2,Developer,Brady,developer,pbkdf2:sha256:50000$bxAcznHL$61b4b8fa2965a8fe499099415199649c50f3b8e980327e3932d8d16c8700f924,Developer,Accepted,0,0,0,0,No notes at this time.
+3,Developer,Pooneet,dev,pbkdf2:sha256:50000$E9waT7lQ$f33c636c38aa0aae583afe81f6a9a576f11a287bf192f2a26675d2630c6eba84,Client,Normal,0,0,0,0,No notes at this time.
+4,Client,James,cli,pbkdf2:sha256:50000$TL6Ikof1$62674b438474488e9fb32f1a727a1deab17681330a82e1171b11af148752c34b,Client,Warning,2000.0,1.0,1,1,No notes at this time.
+5,Developer,Eric,dev-eric,pbkdf2:sha256:50000$IPbpsJK6$c9ddcd770c62d40dd2c0b4656465d76dc3016ec6ca96cd8bf8974147699c5a23,Client,Normal,0,0,0,0,No notes at this time.
+6,dev,dev,developer2@dev,pbkdf2:sha256:50000$aU1IJCLR$e1722d1fda641124223087df312f0bdc87c95f9ebdb7c258cb14818b0da56a53,Developer,Normal,950.0,0,0,0,No notes at this time.
