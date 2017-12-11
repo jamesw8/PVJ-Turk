@@ -352,8 +352,6 @@ def viewPost(sid):
 				json.dump(data, datafile)
 		except:
 			return redirect(url_for('viewPosts'))
-
-
 	with open('assets/'+sid+'/data.json', 'r') as datafile:
 		data = json.load(datafile)
 		data['cemail'] = getUserInfo(data['cid'], ['Email'])[0]
@@ -597,7 +595,7 @@ def postRating(sid):
 			flash('Please submit reason for this rating')
 			return redirect(url_for('viewPost', sid=sid))
 	elif session['id'] == data['cid']:
-		dev_data = float(getUserInfo(session['id'], ['Balance'])[0])
+		dev_data = float(getUserInfo(data['winner'], ['Balance'])[0])
 		su_data = float(getUserInfo(0, ['Balance'])[0])
 		bid_amount = float(data['bids'][int(data['taken'])-1]['price'])
 		updateUser(data['winner'], 'Balance', dev_data+(19*bid_amount/40))
@@ -622,9 +620,9 @@ def postBalance():
 		user_data = getUserInfo(session['id'], ['Balance'])
 		print(user_data)
 		if request.form['transactionType'] == 'Deposit':
-			updateUser(session['id'], 'Balance', int(user_data[0])+change)
+			updateUser(session['id'], 'Balance', float(user_data[0])+change)
 			return redirect(url_for('viewPosts'))
-		if change > int(user_data[0]):
+		if change > float(user_data[0]):
 			flash('Insufficient funds')
 		change *= -1
 
