@@ -548,22 +548,33 @@ def getStatistics():
 @app.route('/complaints/', methods=['GET'])
 def complaints():
 	allComplaints = []
-	with open("complaints.csv", "r") as csvfile:
-		reader = csv.DictReader(csvfile)
-		for row in reader:
-			oneComplaint = []
-			#Check matching ID
-			if session["id"] == row["id"]:
-				#Get all the messages with this ID
+	#if user is superuser, show all complaints
+	if session["UserType"] == "Admin":
+		with open("complaints.csv", "r") as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				oneComplaint = []
 				oneComplaint.append(row["Date"])
 				oneComplaint.append(row["Status"])
 				oneComplaint.append(row["Message"])
 				oneComplaint.append(row["Response"])
-				#Append one complaint to all complaints
 				allComplaints.append(oneComplaint)
-	if session["UserType"] == "Admin":
-		return render_template("viewopencomplaints.html")
+		return render_template("viewopencomplaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
+	#else show all complaints that correspond to the uesr in session
 	else:
+		with open("complaints.csv", "r") as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				oneComplaint = []
+				#Check matching ID
+				if str(session["id"]) == str(row["id"]):
+					#Get all the messages with this ID
+					oneComplaint.append(row["Date"])
+					oneComplaint.append(row["Status"])
+					oneComplaint.append(row["Message"])
+					oneComplaint.append(row["Response"])
+					#Append one complaint to all complaints
+					allComplaints.append(oneComplaint)
 		return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
 
 @app.route('/complaints/compose/', methods=['GET','POST'])
@@ -571,12 +582,13 @@ def composeComplaint():
 	if request.method == "POST":
 		#Write to csv
 		with open("complaints.csv", "a") as csvfile:
-			writer = csv.DictWriter(csvfile, ["id", "Date", "Type", "Message"])
+			writer = csv.DictWriter(csvfile, ["id", "Date", "Status", "Message", "Response"])
 			writer.writerow({
 				"id": session["id"],
 				"Date": request.form["date"],
-				"Type": "Sent",
-				"Message": request.form["message"]
+				"Status": "Open",
+				"Message": request.form["message"],
+				"Response": ""
 				})
 		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
