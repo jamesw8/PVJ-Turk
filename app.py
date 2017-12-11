@@ -1,9 +1,3 @@
-# TODO
-# - fix up design (switch to materialize framework?)
-# - switch to db by preference
-# - convert inline css to external css
-# - authentication
-
 from flask import Flask, render_template, request, send_file, session, redirect, url_for, flash
 from werkzeug import generate_password_hash, check_password_hash
 import os
@@ -276,7 +270,8 @@ def createPost():
 				'submitted': False,
 				'submission': '',
 				'bids': [],
-				'winner': 0
+				'winner': 0,
+				'ratings': []
 			}
 			with open('assets/'+numPost+'/data.json', 'w') as datafile:
 				json.dump(data, datafile)
@@ -511,7 +506,7 @@ def getStatistics():
 								if data['submitted']:
 									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + bid['price']
 								else:
-									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + int(bid['price'])/2
+									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + float(bid['price'])/2
 	name = ()
 	maxMoney = 0
 	for key,val in developerMoney.items():
@@ -520,6 +515,7 @@ def getStatistics():
 			name = getUserInfo(key, ['FirstName', 'LastName'])
 	try:
 		maxDeveloper = name[1] + ', ' + name[0]
+		maxMoney = (maxMoney*19)/20
 	except:
 		maxDeveloper = '/{No developers/}'
 
@@ -624,7 +620,7 @@ def postRating(sid):
 	if not 'Email' in session:
 		return redirect(url_for('signup'))
 
-	with open('assets/'+sid+'/data.json', 'r') as datafile:
+	with open('assets/'+sid+'/data.json', 'r+') as datafile:
 		id_for_review = -1
 		data = json.load(datafile)
 		form = request.form.copy()
@@ -633,20 +629,35 @@ def postRating(sid):
 		else:
 			id_for_review = data['winner']
 		print(id_for_review)
-	if int(form['rating']) < 3:
-		if request.form['Description'] == '':
+
+		if int(form['rating']) < 3 and request.form['Description'] == '':
 			flash('Please submit reason for this rating')
 			return redirect(url_for('viewPost', sid=sid))
-	elif session['id'] == data['cid']:
-		dev_data = float(getUserInfo(data['winner'], ['Balance'])[0])
-		su_data = float(getUserInfo(0, ['Balance'])[0])
-		bid_amount = float(data['bids'][int(data['taken'])-1]['price'])
-		updateUser(data['winner'], 'Balance', dev_data+(19*bid_amount/40))
-		updateUser(0, 'Balance', su_data-(19*bid_amount/40))
+		else:
+			already_rated = False
+			for prev_rating in data['ratings']:
+				if prev_rating['rater'] == session['id']:
+					already_rated = True
+			if not already_rated:
+				form['rater'] = session['id']
+				data['ratings'].append(form)
+				datafile.seek(0)
+				datafile.truncate()
+				print('after truncate',data)
+				json.dump(data, datafile)
+
+				if session['id'] == data['cid']:
+					dev_data = float(getUserInfo(data['winner'], ['Balance'])[0])
+					su_data = float(getUserInfo(0, ['Balance'])[0])
+					bid_amount = float(data['bids'][int(data['taken'])-1]['price'])
+					updateUser(data['winner'], 'Balance', dev_data+(19*bid_amount/40))
+					updateUser(0, 'Balance', su_data-(19*bid_amount/40))
+			else:
+				flash('You have alread submitted a rating for this project!')
+				return redirect(url_for('viewPost', sid=sid))
 
 	user_data = getUserInfo(id_for_review, ['Rating', 'Rating_Count'])
 	user_data = [float(user_data[0]), int(user_data[1])]
-	print(user_data)
 	total_score = user_data[0]*user_data[1]
 	total_score += float(request.form['rating'])
 	new_rating = total_score/(user_data[1]+1)
