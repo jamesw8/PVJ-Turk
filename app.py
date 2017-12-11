@@ -341,6 +341,7 @@ def viewPost(sid):
 					'id': session['id'],
 					'firstname': session['FirstName']
 				}
+				form['proposedDeadline'] = "{}-{}-{}".format(form['proposedDeadlineYear'], form['proposedDeadlineMonth'], form['proposedDeadlineDay'])
 				bids.append(form)
 				data['bids'] = bids
 				# reset file for overwrite
@@ -363,7 +364,7 @@ def viewPost(sid):
 		return render_template('post.html',
 			data=data)
 
-	return redirect(url_for('viewPosts'))
+	return redirect(url_for('viewPosts', sid=sid))
 
 @app.route('/posts/view/<sid>', methods=['GET'])
 def redirViewPost(sid):

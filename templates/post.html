@@ -64,7 +64,34 @@
             <div class="row">
               <div class="form-group col-m-4">
               <label>Proposed Deadline</label>
-              <input type="date" class="form-control" placeholder="Proposed Deadline" name="proposedDeadline" required>
+              <div class="row">
+								<div class="form-group col-m-12">
+									<div style="float:left;width:30%;" name = "year">
+				             <select class="form-control col-m-3" name='proposedDeadlineYear'>
+											 Year
+				               {% for i in range(2017,2019) %}
+											 		<option>{{ i }}</option>
+											 {% endfor %}
+				             </select>
+									 </div>
+									 <div style="float:left;width:30%;" name = "month">
+										 <select class="form-control col-m-3" name='proposedDeadlineMonth'>
+											 Month
+				               {% for i in range(1,13) %}
+											 		<option>{{ i }}</option>
+											 {% endfor %}
+				             </select>
+									 </div>
+									 <div style="float:left;width:30%;" name = "day">
+										 <select class="form-control col-m-3" name='proposedDeadlineDay'>
+											 Day
+				               {% for i in range(1,30) %}
+											 		<option>{{ i }}</option>
+											 {% endfor %}
+				             </select>
+				           </div>
+								 </div>
+							 </div>
               </div>
             </div>
             <div class="row">
