@@ -23,10 +23,10 @@
 				<td>{{complaints[i][0]}}</th>
 				<td>{{complaints[i][1]}}</td>
 				<td>{{complaints[i][2]}}</td>
-				{% if complaints[i][3] == "Open" %}
+				{% if complaints[i][1] == "Open" %}
 					<td>
 						<div class="container-fluid"> 
-							<a class="btn btn-primary" href="/complaints/resolve">Resolve</a>
+							<a class="btn btn-primary" href="/complaints/resolve/{{i}}">Resolve</a>
 						</div>
 					</td>
 				{% endif %}

@@ -593,18 +593,31 @@ def composeComplaint():
 		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
 
-@app.route('/complaints/resolve/', methods=["GET", "POST"])
-def resolveComplaint():
+@app.route('/complaints/resolve/<cid>', methods=["GET", "POST"])
+def resolveComplaint(cid=None):
 	if request.method == "POST":
 		#Update complaint status of csv
-		with open("complaints.csv", "w") as csvfile:
-			writer = csv.DictWriter(csvfile, ["Status", "Response"])
-			writer.writerow({
-				"Status": "Closed",
-				"Response": request.form["response"]
-				}) 
+		with open("complaints.csv", "r") as csvfile:
+			reader = csv.DictReader(csvfile)
+			for i, row in enumerate(reader):
+				if str(i) == str(cid):
+					with open("complaints.csv", "a") as csvfile:
+						writer = csv.DictWriter(csvfile, ["id", "Date", "Status", "Message", "Response"])
+						writer.writerow({
+							"id": row["id"],
+							"Date": row["Date"],
+							"Status": "Closed",
+							"Message": row["Message"],
+							"Response": request.form["response"]
+							}) 
 		return redirect(url_for("complaints"))
-	return render_template("composereply.html")
+	msg = ""
+	with open("complaints.csv", "r") as csvfile:
+		reader = csv.DictReader(csvfile)
+		for i, row in enumerate(reader):
+			if str(i) == str(cid):
+				msg = row["Message"]
+	return render_template("composereply.html", msg=msg)
 
 @app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):
