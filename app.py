@@ -295,17 +295,20 @@ def viewPosts():
 	print(projects)
 	return render_template('viewposts.html', projects=projects)
 
-@app.route('/posts/my', methods=['GET'])
-def viewMyPosts():
+@app.route('/posts/<userID>', methods=['GET'])
+def viewMyPosts(userID=None):
 	projects = []
+	user_details = getUserInfo(userID, headers)
+	if not user_details:
+		return redirect(request.referrer or url_for('viewPosts'))
 	for d in os.listdir(assets_dir):
 		if os.path.isdir(assets_dir+d):
 			with open('assets/'+d+'/data.json', 'r') as datafile:
 				data = json.load(datafile)
 				print(data['taken'])
-				if session['UserType'] == 'Developer' and str(data['winner']) == session['id']:
+				if session['UserType'] == 'Developer' and str(data['winner']) == userID:
 					projects.append(data)
-				elif session['UserType'] == 'Client' and str(data['cid']) == session['id']:
+				elif session['UserType'] == 'Client' and str(data['cid']) == userID:
 					projects.append(data)
 	return render_template('viewposts.html', projects=projects)
 
@@ -688,6 +691,8 @@ def getUser(id=None):
 	global headers
 	print(session['id'])
 	user_details = getUserInfo(id, headers)
+	if not user_details:
+		return redirect(request.referrer or url_for('index'))
 	userjson = {}
 	try:
 		with open('users/'+id+'/user.json', 'r+') as userdata:
@@ -697,7 +702,7 @@ def getUser(id=None):
 
 	user = {}
 	for header in range(len(headers)):
-		if headers[header] in ['Password_Hash', 'id']:
+		if headers[header] in ['Password_Hash']:
 			continue
 		print(header)
 		thing = user_details[header]
