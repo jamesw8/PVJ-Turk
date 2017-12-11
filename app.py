@@ -202,7 +202,7 @@ def accepted():
 		print('good')
 		updateUser(session['id'], 'Status', 'Normal')
 		data = {}
-		with open('users/user.json', 'w') as userdata:
+		with open('users/'+session['id']+'/user.json', 'w') as userdata:
 			# data = json.load(userdata)
 			data['form'] = request.form
 			json.dump(data, userdata)
@@ -688,8 +688,12 @@ def getUser(id=None):
 	print(session['id'])
 	user_details = getUserInfo(id, headers)
 	userjson = {}
-	with open('users/user.json', 'r+') as userdata:
-		userjson = json.load(userdata)
+	try:
+		with open('users/'+id+'/user.json', 'r+') as userdata:
+			userjson = json.load(userdata)
+	except:
+		pass
+
 	user = {}
 	for header in range(len(headers)):
 		if headers[header] in ['Password_Hash', 'id']:
@@ -698,7 +702,10 @@ def getUser(id=None):
 		thing = user_details[header]
 		user[headers[header]] = thing
 	print(user)
-	return render_template('user.html', user_details=user, userjson=userjson['form'])
+	if 'form' in userjson:
+		return render_template('user.html', user_details=user, userjson=userjson['form'])
+	else:
+		return render_template('user.html', user_details=user, userjson=None)
 
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
