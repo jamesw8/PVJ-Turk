@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12 header">
+			<h1>Search Results</h1>
+		</div>
+	</div>
+</div>
+<br>
+<div class="container-fluid">
+	{% for result in results %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<a href="/user/{{result[id]}}">{{result[name]}}</a>
+					</div>
+				</div>
+			</a>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+{% endblock %}
