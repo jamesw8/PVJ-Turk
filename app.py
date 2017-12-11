@@ -202,8 +202,9 @@ def accepted():
 		print('good')
 		updateUser(session['id'], 'Status', 'Normal')
 		data = {}
-		with open('users/'+session['id']+'/user.json', 'w') as userdata:
-			# data = json.load(userdata)
+		if not os.path.exists('users/'+session['id']):
+			os.mkdir('users/'+session['id'])
+		with open('users/'+session['id']+'/user.json', 'w+') as userdata:
 			data['form'] = request.form
 			json.dump(data, userdata)
 		session['Status'] = 'Normal'
