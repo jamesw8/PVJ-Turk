@@ -719,14 +719,16 @@ def getNumPosts():
 @app.route("/search/", methods=["GET", "POST"])
 def search():
 	results = []
-	with open("users.csv", "r") as csvfile:
-		reader = csv.DictReader(csvfile)
-		for row in reader:
-			info = []
-			info.append(row["id"])
-			info.append(row["FirstName"])
-			info.append(row["LastName"])
-			results.append(info)
+	if request.method == "POST":
+		with open("users.csv", "r") as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				info = []
+				info.append(row["id"].lower())
+				info.append(row["FirstName"].lower())
+				info.append(row["LastName"].lower())
+				if request.form["search"] in info:
+					results.append(info)
 	return render_template("searchresult.html", numResults=len(results), results=results)
 
 # Run Flask web server
