@@ -3,7 +3,8 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12 header">
-			<h1>User Profile</h1>
+			<h1>{{ user_details['FirstName'] }} {{ user_details['LastName'] }}</h1>
+			<a class="btn btn-default" href="{{ url_for('viewMyPosts', userID=user_details['id']) }}">View Projects</a>
 		</div>
 	</div>
 </div>
