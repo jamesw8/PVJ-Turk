@@ -506,7 +506,7 @@ def getStatistics():
 								if data['submitted']:
 									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + bid['price']
 								else:
-									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + int(bid['price'])/2
+									developerMoney[data['winner']] = developerMoney.get(data['winner'], 0) + float(bid['price'])/2
 	name = ()
 	maxMoney = 0
 	for key,val in developerMoney.items():
@@ -515,6 +515,7 @@ def getStatistics():
 			name = getUserInfo(key, ['FirstName', 'LastName'])
 	try:
 		maxDeveloper = name[1] + ', ' + name[0]
+		maxMoney = (maxMoney*19)/20
 	except:
 		maxDeveloper = '/{No developers/}'
 
