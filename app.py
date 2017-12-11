@@ -272,7 +272,6 @@ def createPost():
 				'deadline': request.form['deadline'],
 				'bidDeadline': "{}-{}-{}".format(request.form['bidDeadlineYear'], request.form['bidDeadlineMonth'], request.form['bidDeadlineDay'] ),
 				'filename': specfile[0].filename,
-				'reason': '',
 				'taken': '0',
 				'submitted': False,
 				'submission': '',
@@ -443,12 +442,13 @@ def acceptBid(sid, bid):
 					winningBid = b['bid']
 					data['taken'] = winningBid
 					data['winner'] = b['bidder']['id']
-					maxBid = int(winBid)
+					minBid = int(winBid)
 					for otherBid in bids:
-						maxBid = (int(otherBid['price']) if int(otherBid['price']) > maxBid else maxBid)
-					if maxBid > int(winBid):
-						print(maxBid, int(winBid))
+						minBid = (int(otherBid['price']) if int(otherBid['price']) < minBid else minBid)
+					if minBid < int(winBid):
+						print(minBid, int(winBid))
 						# reset file for overwrite
+						data['reason'] = ''
 						datafile.seek(0)
 						datafile.truncate()
 						print('after truncate',data)
