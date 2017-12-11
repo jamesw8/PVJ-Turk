@@ -45,5 +45,7 @@
 		</div>
 	</div>
 {% endfor %}
-<a class="btn btn-danger" href="/complaints">Complain</a>
+{% if session['Email'] %}
+	<a class="btn btn-danger" href="/complaints">Complain</a>
+{% endif %}
 {% endblock %}
