@@ -12,4 +12,4 @@ id,FirstName,LastName,Email,Password_Hash,UserType,Status,Balance,Rating,Rating_
 11,p,t,pt@pt,pbkdf2:sha256:50000$zTzufV8l$baa7dcf564be167c04c77630f756e0412068da308bc1405f3ab8c79639abdd1c,Client,Temporary,100000000,0,0,,
 12,James,Wong,james@wong,pbkdf2:sha256:50000$ybuYqJMa$d94dfd4d0128ed70790e6de0881311390c485d27aa3d5fac9efdbfe0e3a90260,Developer,Rejected,100000000,0,0,,Needs new name
 13,James,Wong,james@james,pbkdf2:sha256:50000$U4sosPUC$03488ea7cc71d42f1edfec1fa242abe28d14b34ee5ec7fe7eb5f4515fb2c3284,Developer,Normal,100001350.0,1,1	,,
-13,f,f,f@f,pbkdf2:sha256:50000$I6PWXREo$fff11d15241737dd9704fba1f0a477bb9ceef998724a9b0cc7b0314ed78f76ff,Developer,Normal,0,0,0,0,0,No notes at this time.
+13,f,f,f@f,pbkdf2:sha256:50000$I6PWXREo$fff11d15241737dd9704fba1f0a477bb9ceef998724a9b0cc7b0314ed78f76ff,Developer,Normal,0,0,0,0,0,No notes at this time.14,c,d,q@w,pbkdf2:sha256:50000$R6sRPgsx$68aa655141ebbcf133e13b496b369d367016564d5ac14cc05cd775fd670b2198,Client,Temporary,0,0,0,0,No notes at this time.
