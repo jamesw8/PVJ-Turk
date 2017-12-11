@@ -48,19 +48,21 @@
 		</div>
 	</div>
 {% endfor %}
-{% for attribute in userjson %}
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					{{ attribute }}
-				</div>
-				<div class="panel-body">
-					{{ userjson[attribute] }}
+{% if userjson %}
+	{% for attribute in userjson %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						{{ attribute }}
+					</div>
+					<div class="panel-body">
+						{{ userjson[attribute] }}
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-{% endfor %}
+	{% endfor %}
+{% endif %}
 </div>
 {% endblock %}
