@@ -727,7 +727,7 @@ def search():
 				info.append(row["id"].lower())
 				info.append(row["FirstName"].lower())
 				info.append(row["LastName"].lower())
-				if request.form["search"] in info:
+				if request.form["search"].lower() in info:
 					results.append(info)
 	return render_template("searchresult.html", numResults=len(results), results=results)
 
