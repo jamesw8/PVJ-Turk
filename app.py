@@ -703,6 +703,19 @@ def getUser(id=None):
 def getNumPosts():
 	return sum(os.path.isdir(assets_dir+d) for d in os.listdir(assets_dir))
 
+@app.route("/search/", methods=["GET", "POST"])
+def search(query=None):
+	if request.method == "POST":
+		with open("users.csv", "r") as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				userInfo = row["FirstName"] + row["LastName"]
+				if request.form["search"] in userInfo:
+					return redirect(url_for("getUser", id=row["id"]))
+	return render_template("searchresult.html")
+
+
+
 # Run Flask web server
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
