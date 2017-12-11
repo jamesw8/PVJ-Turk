@@ -556,13 +556,17 @@ def complaints():
 			if session["id"] == row["id"]:
 				#Get all the messages with this ID
 				oneComplaint.append(row["Date"])
-				oneComplaint.append(row["Type"])
+				oneComplaint.append(row["Status"])
 				oneComplaint.append(row["Message"])
+				oneComplaint.append(row["Response"])
 				#Append one complaint to all complaints
 				allComplaints.append(oneComplaint)
-	return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
+	if session["UserType"] == "Admin":
+		return render_template("viewopencomplaints.html")
+	else:
+		return render_template("complaints.html", numComplaints=len(allComplaints), complaints=allComplaints)
 
-@app.route('/complaints/compose', methods=['GET','POST'])
+@app.route('/complaints/compose/', methods=['GET','POST'])
 def composeComplaint():
 	if request.method == "POST":
 		#Write to csv
@@ -576,6 +580,19 @@ def composeComplaint():
 				})
 		return redirect(url_for("complaints"))
 	return render_template("composecomplaint.html")
+
+@app.route('/complaints/resolve/', methods=["GET", "POST"])
+def resolveComplaint():
+	if request.method == "POST":
+		#Update complaint status of csv
+		with open("complaints.csv", "w") as csvfile:
+			writer = csv.DictWriter(csvfile, ["Status", "Response"])
+			writer.writerow({
+				"Status": "Closed",
+				"Response": request.form["response"]
+				}) 
+		return redirect(url_for("complaints"))
+	return render_template("composereply.html")
 
 @app.route('/rate/<sid>', methods=['GET', 'POST'])
 def postRating(sid):

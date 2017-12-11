@@ -1,4 +1,4 @@
-{% extends "base.html" %}	
+{% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
 	<div class="row">
@@ -7,10 +7,6 @@
 		</div>
 	</div>
 </div>
-<div class="container-fluid">
-	<a class="btn btn-primary" href="/complaints/compose">Compose</a>
-</div>
-<br>
 <div class="container-fluid table-responsive">
 	<table class="table table-striped">
 		<theadg>
@@ -18,7 +14,7 @@
 				<th scope="col">Date</th>
 				<th scope="col">Status</th>
 				<th scope="col">Message</th>
-				<th scope="col">Response</th>
+				<th scope="col">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -27,7 +23,13 @@
 				<td>{{complaints[i][0]}}</th>
 				<td>{{complaints[i][1]}}</td>
 				<td>{{complaints[i][2]}}</td>
-				<td>{{complaints[i][3]}}</td>
+				{% if complaints[i][3] == "Open" %}
+					<td>
+						<div class="container-fluid"> 
+							<a class="btn btn-primary" href="/complaints/resolve">Resolve</a>
+						</div>
+					</td>
+				{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>
