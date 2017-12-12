@@ -305,10 +305,11 @@ def viewMyPosts(userID=None):
 		if os.path.isdir(assets_dir+d):
 			with open('assets/'+d+'/data.json', 'r') as datafile:
 				data = json.load(datafile)
-				print(data['taken'])
-				if session['UserType'] == 'Developer' and str(data['winner']) == userID:
+				print('taken',data['taken'])
+				print('usertype',user_details[5])
+				if user_details[5] == 'Developer' and str(data['winner']) == userID:
 					projects.append(data)
-				elif session['UserType'] == 'Client' and str(data['cid']) == userID:
+				elif user_details[5] == 'Client' and str(data['cid']) == userID:
 					projects.append(data)
 	return render_template('viewposts.html', projects=projects)
 
@@ -691,6 +692,7 @@ def getUser(id=None):
 	global headers
 	print(session['id'])
 	user_details = getUserInfo(id, headers)
+	print(user_details)
 	if not user_details:
 		return redirect(request.referrer or url_for('index'))
 	userjson = {}
