@@ -718,18 +718,28 @@ def getNumPosts():
 
 @app.route("/search/", methods=["GET", "POST"])
 def search():
-	results = []
+	resultsUsers = []
+	resultsProjects = []
 	if request.method == "POST":
 		with open("users.csv", "r") as csvfile:
 			reader = csv.DictReader(csvfile)
 			for row in reader:
-				info = []
-				info.append(row["id"].lower())
-				info.append(row["FirstName"].lower())
-				info.append(row["LastName"].lower())
-				if request.form["search"].lower() in info:
-					results.append(info)
-	return render_template("searchresult.html", numResults=len(results), results=results)
+				fullName = row["FirstName"] + " " + row["LastName"]
+				if request.form["search"].lower() in fullName.lower():
+					info = []
+					info.append(row["id"])
+					info.append(fullName)
+					resultsUsers.append(info)
+		for d in os.listdir(assets_dir):
+			if os.path.isdir(assets_dir+d):
+				with open('assets/'+d+'/data.json', 'r') as datafile:
+					data = json.load(datafile)
+					if request.form["search"].lower() in data["projectName"].lower():
+						info = []
+						info.append(data["sid"])
+						info.append(data["projectName"])
+						resultsProjects.append(info)
+	return render_template("searchresult.html", numResultsUsers=len(resultsUsers), resultsUsers=resultsUsers, numResultsProjects=len(resultsProjects), resultsProjects=resultsProjects)
 
 # Run Flask web server
 if __name__ == '__main__':
